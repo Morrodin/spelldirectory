@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pathfinder Spelldirectory</string>
+    <string name="help_basics_paragraph">When the application is first started, if there exist no characters the application will prompt the user to create a character to save any prepared spells to. Spells are then prepared individually for each character, to allow several people to use a single device. 
+\n\n
+The basic navigation of the app is fairly intuitive, but to get the most out of the application the <font fgcolor="#ff00ffff">longclick</font> action needs to be used. The functionality of the <font fgcolor="#ff00ffff">longclick</font> action is context dependent, with the functionality as seen below.</string>
+	<string name="help_character_list_paragraph"><font fgcolor="#ff00ffff">Longclick</font> starts edit of the selected character, allowing changing of name as well as deletion. Simply clicking a character name chooses that character and retrieves the prepared spells of said character.
+	\n\n
+	To create a new Character, simply press the Menu button and from there Create Character, this will bring up the character creation dialog.     
+    </string>
+	<string name="help_classes_paragraph"><font fgcolor="#ff00ffff">Longclick</font> currently has no function in this view. Choosing a class in this view changes what spells are available in the Class Spells view.
+\n\n
+One class is of particular note. That is the class called <font fgcolor="#ff00ffff">Known Spells</font>. This is a dynamic class that can be used by wizards and others for keeping either Favorite Spells, or specific spells that the character knows. This allows a character to work with only a subset of all the available spells. 
+	</string>
+	<string name="help_class_spells_paragraph">Clicking a spell in this view shows the full details of the specific spell. For the moment, spell descriptions with tables will not show the tables correctly.
+\n\n
+Initially a <font fgcolor="#ff00ffff">longclick</font> press prepares a single use of a spell. Prepared spell uses can also be removed by clicking the <font fgcolor="#ff00ffff">Longclick Mode</font> option accessable by pressing the Menu button. This currently allows three different modes within the Spell List: Prepare Spell, Remove Spell, Add to Known Spells. 
+\n\n
+Also available from the Menu button is the ability to add Metamagic feats to prepared spells. This functionality is fairly basic for now. Click Add Metamagic from the menu and choose a feat. Then prepare a spell as normal, a notification will confirm the prepared spell. The level in the Prepared List is updated appropriately.
+</string>
+	<string name="help_prepared_spells_paragraph">
+	Clicking spells here show the same view as for the Class Spell view. 
+\n\n
+Initially the <font fgcolor="#ff00ffff">longclick</font> will use up one daily use of the spell, while retaining the number of prepared spells for when the Reset Uses button is pressed from the menu. More than one use of the same spell can be prepared this way. Spells can also be removed by changing the <font fgcolor="#ff00ffff">Longclick Mode</font> in the same manner as in the Spell List view. The Modes available in the Prepared Spells View are currently: Use Spell, Remove Prepared. 
+\n\n
+Pressing Clear List from the menu will clear the list of prepared spells for the specific character only. </string>
+	<string name="help_search_paragraph">
+	A search function can be accessed by touching the magnifying glass in the Class Spells or Prepared Spells views. This search function will filter the spells shown in the respective lists to only show those with a title containing the searched for phrase. 
+\n\n
+To remove the filter, press the back button. 
+	</string>
+	<string name="help_prepared_summary_paragraph">
+	In the Class Spells and Prepared Spells views, above the list of spells, the number of prepared spells for each level 0-9 can be seen. This summary is updated appropriately when the prepared list is changed, and correctly calculates for the increased level of Metamagics.
+	</string>
+    <string name="info_app_info_paragraph">Welcome to this Pathfinder Spell Directory application. This application was initially created in the summer of 2011 by Tim Lenneryd (me) and John Laurin to help a casterheavy party of players manage their spells. I have since continued development when I have had time and as a result the app now holds a wealth of useful functionality. 
+\n\n
+More functionality may very well be added when time allows, and as such feedback and suggestions about new functionality is very much appreciated. I can be reached at zzoranor (at) gmail.com. 
+\n\n
+I would also like to highlight the Pathfinder SRD community page <a>www.d20pfsrd.com</a>, for being so good at keeping their site up to date with all the information available under the Pathfinder Community Use Package. It was their page that inspired me to create this app to start with, to be able to quickly present spell information when one does not have quick access to the internet. 
+</string>
+	<string name="info_license_info_paragraph">This application is provided free of charge. Promoting tabletop RPG playing and helping spellcasters manage their spells are the main goals of this app. 
+\n\n
+Paizo Publishing has released the spell information and other supporting information for community use, a very good initiative that has allowed the publishing of this application. I make no claim on the spell information data of any kind, Paizo Publishing of course retains the ownership of the Intellectual property. 
+\n\n
+Paizo Publishing asks that the following qoute is presented where Paizo material has been used:\n\n
+<i>\"This [website, character sheet, or whatever it is] uses trademarks and/or copyrights owned by Paizo Publishing, LLC, which are used under Paizo\'s Community Use Policy. We are expressly prohibited from charging you to use or access this content. This [website, character sheet, or whatever it is] is not published, endorsed, or specifically approved by Paizo Publishing. For more information about Paizo\'s Community Use Policy, please visit <a>paizo.com/communityuse</a>. For more information about Paizo Publishing and Paizo products, please visit <a>paizo.com.</a>\"</i>
+</string>
+    <string name="changelog_full_title">Change Log</string>
+    <string name="changelog_title">What\'s New</string>
+    <string name="changelog_ok_button">OK</string>
+    <string name="spell_preferences">Spell Preferences</string>
+    <string name="cleric_spells_oracle_list_title">Full Oracle Spell List</string>
+    <string name="cleric_spells_oracle_list_summary">This will place all cleric spells within the oracle spell list for convenience. </string>
+    <string name="default_to_longclick_action_title">Default Longclick Action</string>
+    <string name="default_to_longclick_action_summary">The LongClick action will default to the specified action when changing tabs and similar occasions.</string>
+    <string name="use_spell">Use Spell</string>
+    <string name="prepare_spell">Prepare Spell</string>
+    <string name="add_known_spell">Add to Known Spells</string>
+    <string name="remove_prepared_spell">Remove Prepared Spell</string>
+    <string-array name="preplist_longclick_action_entries">
+        <item >@string/use_spell</item>
+        <item >@string/remove_prepared_spell</item>
+    </string-array>
+    <string-array name="preplist_longclick_action_entry_values">
+        <item >3</item>
+        <item >2</item>
+    </string-array>
+    <string-array name="spelllist_longclick_action_entries">
+        <item >@string/prepare_spell</item>
+        <item >@string/add_known_spell</item>
+        <item >@string/remove_prepared_spell</item>
+    </string-array>
+    <string-array name="spelllist_longclick_action_entry_values">
+        <item >1</item>
+        <item >5</item>
+        <item >2</item>
+    </string-array>
+    <string name="spelllist_default_long_click_action_title">SpellList Longclick Action</string>
+    <string name="spelllist_default_long_click_action_summary">Choose the LongClick Action that the app will default to on the Spell List. </string>
+    <string name="preplist_default_long_click_action_title">Prepared List Longclick Action</string>
+    <string name="preplist_default_long_click_action_summary">Choose the LongClick Action that the app will default to on the Prepared List. </string>
+</resources>

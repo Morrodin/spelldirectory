@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item 
+    android:id="@+id/SL_apply_metamagic" 
+    android:title="Prepare with Metamagic" 
+    android:icon="@android:drawable/ic_menu_preferences"/>
+    <item 
+    android:id="@+id/SL_longclick_mode" 
+    android:title="Longclick Mode"
+    android:visible="true" 
+    android:icon="@android:drawable/ic_menu_add">
+	    <menu>
+		    <group android:checkableBehavior="single">
+		        <item android:id="@+id/longclick_prepare"
+		              android:title="Prepare Spell"
+		              android:checked="true" />
+		        <item android:id="@+id/longclick_known"
+		              android:title="Add to Known Spells" />
+		        <item android:id="@+id/longclick_remove"
+		              android:title="Remove Prepared Spell" />
+		    </group>
+		</menu>  
+    </item>
+</menu>

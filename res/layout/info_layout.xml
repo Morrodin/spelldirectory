@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <!-- Application Information -->
+
+        <TextView
+            android:id="@+id/info_basics_title"
+            style="@style/TextTitle"
+            android:text="Application Information" />
+
+        <TextView
+            android:id="@+id/info_basics_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/info_basics_title"
+            android:text="@string/info_app_info_paragraph" />
+
+        <!-- Books -->
+
+        <TextView
+            android:id="@+id/info_books_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/info_basics_paragraph"
+            android:text="Currently has Spells from:" />
+
+        <TextView
+            android:id="@+id/info_book_1"
+            style="@style/TextListItem"
+            android:layout_below="@id/info_books_title"
+            android:text="-\t Pathfinder Core Rulebook" />
+
+        <TextView
+            android:id="@+id/info_book_2"
+            style="@style/TextListItem"
+            android:layout_below="@id/info_book_1"
+            android:text="-\t Pathfinder Advanced Players Guide" />
+
+        <TextView
+            android:id="@+id/info_book_3"
+            style="@style/TextListItem"
+            android:layout_below="@id/info_book_2"
+            android:text="-\t Pathfinder Ultimate Magic" />
+
+        <TextView
+            android:id="@+id/info_book_4"
+            style="@style/TextListItem"
+            android:layout_below="@id/info_book_3"
+            android:text="-\t Pathfinder Ultimate Combat" />
+
+        
+       	<TextView
+            android:id="@+id/info_list_end_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/info_book_4"
+            android:text="" />
+       	
+       	
+        <!-- License Info -->
+
+        <TextView
+            android:id="@+id/info_license_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/info_list_end_paragraph"
+            android:text="License Information" />
+
+        <TextView
+            android:id="@+id/info_license__paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/info_license_title"
+            android:text="@string/info_license_info_paragraph" />
+    </RelativeLayout>
+
+</ScrollView>

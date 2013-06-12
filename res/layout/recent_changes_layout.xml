@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id = "@+id/recent_changes_container">
+
+<TextView
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/recentChangesTitle"
+    android:layout_alignParentTop="true"
+    android:text="Recent Changes"
+    />
+    
+    <ScrollView
+        android:id="@+id/recentChangesScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+        android:layout_below="@id/recentChangesTitle">
+            <TextView
+                android:id="@+id/recentChangesText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas ac rutrum justo. "/>
+    </ScrollView>
+<Button
+    android:id="@+id/continueToApp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_centerHorizontal="true"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:text="Continue" />
+
+</RelativeLayout>

@@ -1,0 +1,82 @@
+<html>
+  <head>
+    <style type='text/css'>
+      a            { color:#a0a0e0 }
+      div.title    { 
+          color:#C0F0C0; 
+          font-size:1.2em; 
+          font-weight:bold; 
+          margin-top:1em; 
+          margin-bottom:0.5em; 
+          text-align:center }
+      div.subtitle { 
+          color:#C0F0C0; 
+          font-size:0.8em; 
+          margin-bottom:1em; 
+          text-align:center }
+      div.freetext { color:#F0F0F0 }
+      div.list     { color:#C0C0F0 }
+    </style>
+  </head>
+  <body
+$ 1.2.3
+  % Version 1.2.3
+    _2012-05-18
+	* Fixed issue where Known tag was not shown when browsing class spells. 
+	
+$ 1.2.2
+  % Version 1.2.2
+    _2012-05-17
+    * Reworked layout for list header in Class Spells view and Prepared Spells view for better compability with smaller screens.
+	* Class Spells header now also shows what class is currently being browsed. 
+	
+$ 1.2.1
+  % Version 1.2.1
+    _2012-05-12
+    * Major back end refactoring done to database classes to make way for future features. Should lower risk of issues in the long run. 
+	* Added a new Spellbook icon that better reflects what the app is all about.
+	* Bugfix: Will now create a Default character if no other characters exist. This character can be edited as normal with a long-click. 
+	* Known Issue: Hard to track down bug where class changes are sometimes not taken into account when Known spells are used. Killing app and restarting is a temporary work-around. Apologies.
+$ 1.1.2
+  % Version 1.1.2
+    _2012-04-15
+    * File reorganization, should now properly place files on the SD card. Unfortunately, this change might cause loss of characters. I apologize for this, but I felt the need to fix the below issues were too great.
+    * I recommend backing up your characters to file if you have highlvl characters or characters that require time to rememorize.
+    * On todo-list is a secondary redundant backup of characters to xml file on app close, if the database should keep being problematic. 
+    * Added Spell Source book to Single-Spell view. This is first step toward excluding/including specific source books. 
+    * Fixed issue where characters may have been deleted on Update. Character database is now stored in a public directory called spelldirectory.  
+    * Fixed issue where not having any known spells could cause a crash on character restore.
+$ 1.1.1
+  % Version 1.1.1
+    _2012-04-14
+    * Hopefully fixed bug where class was not changed properly after leaving the device alone a while (hard to track down, I hope I have it fixed). 
+    * Fixed bug where daily spell uses left were not retrieved correctly on character restore. Re-restoring a previously backed up char will properly restore daily uses.
+$ 1.1.0
+  % Version 1.1.0 (Known Spells)
+    _2012-04-08
+    * Known Spells is in as a user-definable class. See Help for more info about usage. 
+	* With this new class, Wizards need no longer look through the whole list, and others can use the class to save favorite spells. 
+	* Longclick Mode option has been added to spell list menu to accommodate the new known spells functionality.
+	* LongClick mode now defaults to Prepare Spell/Use spell mode when entering one of the spell browsing list views.
+	* Recent changes dialog has been added. 
+	* Back end refactorings for future features. 
+$ 1.0.3
+  % Version 1.0.3
+    * Code improvements in databases to provide better performance and stability.
+    * Fixed possible issue where Spell Uses were not saved to database correctly. 
+    * Started back-end work on "Known Spells" functionality.
+$ 1.0.2
+  % Version 1.0.2
+    * Now creates default character if none exists. 
+    * Fixed some crashes. 
+$ 1.0.1
+  % Version 1.0.1
+  	* Updated Help View to be more helpful.
+    * Prevented crash when trying to browse spells without characters in the database.
+    * Prevented undefined behavior in some situations when having several characters with the same name.  
+$ 1.0
+  % Version 1.0
+    * Initial Release
+$ END_OF_CHANGE_LOG
+  </body>
+</html>

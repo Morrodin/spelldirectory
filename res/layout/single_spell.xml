@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" 
+	android:id="@+id/scrollView1" 
+	android:layout_height="wrap_content">
+<LinearLayout android:orientation="vertical"    android:layout_width="fill_parent"    android:layout_height="fill_parent">
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout2" android:layout_width="wrap_content">
+    	<TextView android:id="@+id/spell_name" style="@style/CodeFont" android:layout_height="wrap_content" android:layout_width="match_parent" android:text="spell_name" android:gravity="center_horizontal"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout3" android:layout_width="wrap_content">
+    	<TextView android:id="@+id/spell_school_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="School:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_school" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_school"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout15" android:layout_width="wrap_content">
+    	<TextView android:id="@+id/spell_sub_school_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Subschool:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_sub_school" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_sub_school"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout16" android:layout_width="wrap_content">
+    	<TextView android:id="@+id/spell_descriptor_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Descriptor:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_descriptor" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_descriptor"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout4" android:layout_width="wrap_content">
+        <TextView android:id="@+id/spell_lvl_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Spell Lvl:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_lvl" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_lvl"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout5" android:layout_width="wrap_content">
+        <TextView android:id="@+id/spell_casting_time_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Casting Time:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_casting_time" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_casting_time"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout6" android:layout_width="wrap_content">
+        <TextView android:id="@+id/spell_components_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Components:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_components" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_components"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout7" android:layout_width="wrap_content">
+       	<TextView android:id="@+id/spell_range_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Range:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_range" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_range"></TextView>
+    </LinearLayout>
+    <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout8" android:layout_width="wrap_content">
+    	<TextView android:id="@+id/spell_area_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Area:" android:gravity="left" android:minWidth="100dp"></TextView>
+        <TextView android:id="@+id/spell_area" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_area"></TextView>
+    </LinearLayout>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout9" android:layout_width="wrap_content">
+	    <TextView android:id="@+id/spell_target_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Target:" android:gravity="left" android:minWidth="100dp"></TextView>
+	    <TextView android:id="@+id/spell_target" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_target"></TextView>
+	</LinearLayout>
+	<LinearLayout android:layout_height="match_parent" android:id="@+id/linearLayout10" android:layout_width="wrap_content">
+		<TextView android:id="@+id/spell_duration_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Duration:" android:gravity="left" android:minWidth="100dp"></TextView>
+	    <TextView android:id="@+id/spell_duration" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_duration"></TextView>
+	</LinearLayout>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout11" android:layout_width="wrap_content">
+	     <TextView android:id="@+id/spell_save_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Save:" android:gravity="left" android:minWidth="100dp"></TextView>
+	     <TextView android:id="@+id/spell_save" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_save"></TextView>
+	</LinearLayout>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout12" android:layout_width="wrap_content">
+	 	<TextView android:id="@+id/spell_source_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Source:" android:gravity="left" android:minWidth="100dp"></TextView>
+	     <TextView android:id="@+id/spell_source" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_source"></TextView>
+	</LinearLayout>
+	 <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout13" android:layout_width="wrap_content">
+	 	<TextView android:id="@+id/spell_spell_resist_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Spell Resist:" android:gravity="left" android:minWidth="100dp"></TextView>
+	     <TextView android:id="@+id/spell_spell_resist" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_spell_resist"></TextView>
+	</LinearLayout>
+	 <LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout14" android:layout_width="wrap_content">
+	 	<TextView android:id="@+id/spell_effect_label" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="Effect:" android:gravity="left" android:minWidth="100dp"></TextView>
+	     <TextView android:id="@+id/spell_effect" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_effect"></TextView>
+	 </LinearLayout>
+	<LinearLayout android:layout_height="wrap_content" android:id="@+id/linearLayout15" android:layout_width="wrap_content">
+	     <TextView android:id="@+id/spell_description" android:layout_height="wrap_content" android:layout_width="wrap_content" android:text="spell_description" android:padding="10dp"></TextView>
+	</LinearLayout>
+</LinearLayout>
+</ScrollView>

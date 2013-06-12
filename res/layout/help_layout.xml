@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <!--  Help Basics -->
+        <TextView
+            android:id="@+id/help_basics_title"
+            style="@style/TextTitle"
+            android:text="Application Basics" />
+
+        <TextView
+            android:id="@+id/help_basics_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_basics_title"
+            android:text="@string/help_basics_paragraph" />
+
+        <!--  Character List-->
+        <TextView
+            android:id="@+id/help_character_list_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_basics_paragraph"
+            android:text="Character List" />
+
+        <TextView
+            android:id="@+id/help_character_list_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_character_list_title"
+            android:text="@string/help_character_list_paragraph" />
+
+        <!--  Class List -->
+        <TextView
+            android:id="@+id/help_class_list_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_character_list_paragraph"
+            android:text="Class List" />
+
+        <TextView
+            android:id="@+id/help_classes_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_class_list_title"
+            android:text="@string/help_classes_paragraph" />
+
+        <!--  Spell List -->
+        <TextView
+            android:id="@+id/help_spell_list_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_classes_paragraph"
+            android:text="Class Spells" />
+
+        <TextView
+            android:id="@+id/help_spell_list_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_spell_list_title"
+            android:text="@string/help_class_spells_paragraph" />
+
+        <!--  Prepared Spells -->
+        <TextView
+            android:id="@+id/help_prepared_spells_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_spell_list_paragraph"
+            android:text="Prepared Spells" />
+
+        <TextView
+            android:id="@+id/help_prepared_spells_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_prepared_spells_title"
+            android:text="@string/help_prepared_spells_paragraph" />
+
+        <!--  Search -->
+        <TextView
+            android:id="@+id/help_search_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_prepared_spells_paragraph"
+            android:text="Search function" />
+
+        <TextView
+            android:id="@+id/help_search_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_search_title"
+            android:text="@string/help_search_paragraph" />
+
+        <!--  Prepared Summary -->
+        <TextView
+            android:id="@+id/help_prepared_summary_title"
+            style="@style/TextTitle"
+            android:layout_below="@id/help_search_paragraph"
+            android:text="Summary of Prepared Spells" />
+
+        <TextView
+            android:id="@+id/help_prepared_summary_paragraph"
+            style="@style/TextParagraph"
+            android:layout_below="@id/help_prepared_summary_title"
+            android:text="@string/help_prepared_summary_paragraph" />
+    </RelativeLayout>
+
+</ScrollView>

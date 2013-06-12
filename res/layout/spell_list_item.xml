@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+>
+	<TextView 
+		android:id = "@+id/list_view_prepare"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:visibility="invisible"
+	    android:textColor="#00FFFF"
+	    android:text="+"
+	    android:textSize="16sp" />
+	<TextView 
+		android:id = "@+id/list_view_name"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:padding="10dp"
+	    android:textSize="16sp" />
+</LinearLayout>

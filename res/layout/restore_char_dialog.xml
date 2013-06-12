@@ -1,0 +1,76 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/restore_button_container"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content" >
+
+    <TextView
+        android:id="@+id/restore_text"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Be aware that restoring from file removes any current characters." />
+
+    <TextView
+        android:id="@+id/restore_path_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/restore_dest_path"
+        android:layout_alignBottom="@+id/restore_dest_path"
+        android:layout_alignParentLeft="true"
+        android:text="Path: " />
+
+    <EditText
+        android:id="@+id/restore_dest_path"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/restore_text"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@+id/restore_path_text"
+        android:inputType="textUri"
+        android:text="/mnt/sdcard/download/" />
+
+    <TextView
+        android:id="@+id/restore_name_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/restore_dest_name"
+        android:layout_alignBottom="@+id/restore_dest_name"
+        android:layout_alignParentLeft="true"
+        android:text="Name: " />
+
+    <EditText
+        android:id="@+id/restore_dest_name"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/restore_dest_path"
+        android:layout_margin="5dp"
+        android:layout_toRightOf="@+id/restore_name_text"
+        android:inputType="text"
+        android:text="spelldir_restore.xml" />
+
+    <LinearLayout
+        android:id="@+id/restore_button_container"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/restore_dest_name"
+        android:layout_margin="5dp" >
+
+        <Button
+            android:id="@+id/restore_cancel_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.5"
+            android:text="Cancel" />
+
+        <Button
+            android:id="@+id/restore_save_button"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="0.5"
+            android:text="Ok" />
+    </LinearLayout>
+
+</RelativeLayout>

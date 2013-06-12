@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/backupChar" android:title="Backup To File" android:icon="@android:drawable/ic_menu_preferences"/>
+    <item android:id="@+id/restoreChar" android:title="Restore From File" android:icon="@android:drawable/ic_menu_preferences"/>
+    <item android:id="@+id/createChar" android:title="Create Character" android:icon="@android:drawable/ic_menu_preferences"/>
+    <item android:id="@+id/preferences" android:title="Preferences" android:icon="@android:drawable/ic_menu_preferences"/>
+    <item android:id="@+id/help" android:title="Help" android:icon="@android:drawable/ic_menu_help"/>
+    <item android:id="@+id/license" android:title="License Info" android:icon="@android:drawable/ic_menu_preferences"/>
+</menu>

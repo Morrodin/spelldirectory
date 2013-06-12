@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+            android:title="@string/spell_preferences">
+        <CheckBoxPreference
+            android:key="checkbox_clericOracle"
+            android:title="@string/cleric_spells_oracle_list_title"
+            android:summary="@string/cleric_spells_oracle_list_summary"
+            android:defaultValue="true" />
+        <CheckBoxPreference
+            android:key="checkbox_defaultToLongclickAction"
+            android:title="@string/default_to_longclick_action_title"
+            android:summary="@string/default_to_longclick_action_summary"
+            android:defaultValue="true" />
+        <ListPreference 
+            android:key="preplist_defaultLongclickAction"
+            android:title="@string/preplist_default_long_click_action_title"
+            android:summary="@string/preplist_default_long_click_action_summary"
+            android:entries="@array/preplist_longclick_action_entries"
+            android:entryValues="@array/preplist_longclick_action_entry_values"
+            android:defaultValue="3"
+            />
+        <ListPreference 
+            android:key="spelllist_defaultLongclickAction"
+            android:title="@string/spelllist_default_long_click_action_title"
+            android:summary="@string/spelllist_default_long_click_action_summary"
+            android:entries="@array/spelllist_longclick_action_entries"
+            android:entryValues="@array/spelllist_longclick_action_entry_values"
+            android:defaultValue="1"
+            />      
+    </PreferenceCategory>
+</PreferenceScreen>

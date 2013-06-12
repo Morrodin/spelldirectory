@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen  xmlns:android="http://schemas.android.com/apk/res/android">
+	<CheckBoxPreference android:key = "showAllClasses"
+						android:title = "All Classes"
+						android:summary = "Check to show spells from all classes."
+						android:defaultValue = "false" 
+						android:enabled = "false"
+						/>
+	<CheckBoxPreference android:key = "showAllLevels"
+						android:title = "All Levels"
+						android:summary = "Check to show spells from all levels."
+						android:defaultValue = "false"
+						android:enabled = "false"
+						 />
+	<CheckBoxPreference android:key = "alwaysReload"
+						android:title = "Always Reload Data"
+						android:summary = "Uncheck to allow persistent sql data. "
+						android:defaultValue = "true" />
+	<ListPreference android:id ="@+id/classlist"
+					android:key = "classlist"
+					android:title = "Classlist"
+					android:summary ="Specify a class to filter on" 
+					android:enabled = "false"
+					/>
+</PreferenceScreen>
