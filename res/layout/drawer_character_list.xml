@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="240dp"
+              android:background="@color/midnight_blue"
+              android:layout_gravity="left"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/add_new"/>
+        <TextView
+            android:id="@+id/drawer_create_character_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_create_character"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/backup"/>
+        <TextView
+            android:id="@+id/drawer_backup_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_backup"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/refresh"/>
+        <TextView
+            android:id="@+id/drawer_restore_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_restore"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:text="..."/>
+
+
+    <include layout="@layout/drawer_main"/>
+
+</LinearLayout>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/preferences"/>
+        <TextView
+            android:id="@+id/drawer_show_preferences_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_preferences"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/help"/>
+        <TextView
+            android:id="@+id/drawer_help_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_help"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="3dp"
+        android:orientation="horizontal">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:src="@drawable/list"/>
+        <TextView
+            android:id="@+id/drawer_license_info_link"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:textSize="16sp"
+            android:layout_marginLeft="5dp"
+            android:gravity="center_vertical"
+            android:text="@string/drawer_license"/>
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/drawer_border"/>
+
+</LinearLayout>

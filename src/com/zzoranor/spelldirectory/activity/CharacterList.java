@@ -23,18 +23,15 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.zzoranor.spelldirectory.CharacterLabel;
 import com.zzoranor.spelldirectory.CustomCharacterAdapter;
 import com.zzoranor.spelldirectory.R;
 import com.zzoranor.spelldirectory.TabMain;
+import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.data.Character;
 import com.zzoranor.spelldirectory.database.DbAdapter;
 import com.zzoranor.spelldirectory.database.DbAdapterFactory;
@@ -43,7 +40,9 @@ import com.zzoranor.spelldirectory.util.Constants;
 public class CharacterList extends ListActivity implements OnClickListener, android.content.DialogInterface.OnCancelListener{
 	
 	public static boolean EMULATOR = false;
-	
+
+    private MainDrawerController mDrawerController;
+
 	DbAdapter sql;
 	final ArrayList<CharacterLabel> character_labels = new ArrayList<CharacterLabel>();
 	Context context;
@@ -76,7 +75,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.character_list_layout);
 		
-		
+		mDrawerController = new MainDrawerController(this);
 		
 		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
 		int prefsChosenChar = settings.getInt("chosen_character", -1);
@@ -162,9 +161,70 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 		});
 		
 		lv.setOnTouchListener(gestureListener);
-		
+
+        setupDrawer();
+
 		reloadList();
 	}
+
+    private void setupDrawer() {
+        TextView createCharacterLink = (TextView) findViewById(R.id.drawer_create_character_link);
+        createCharacterLink.setOnClickListener(this.createCharacterLinkListener());
+
+        TextView backupLink = (TextView) findViewById(R.id.drawer_backup_link);
+        backupLink.setOnClickListener(this.backupLinkListener());
+
+        TextView restoreLink = (TextView) findViewById(R.id.drawer_restore_link);
+        restoreLink.setOnClickListener(this.restoreLinkListener());
+
+        //Wire universal links through controller
+        mDrawerController.setupUniversalDrawerLinks();
+    }
+
+    /**
+     * Listener for the Create Character drawer link
+     *
+     * @return
+     *          {@link android.view.View.OnClickListener} for Create Character link
+     */
+    protected OnClickListener createCharacterLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCharacter();
+            }
+        };
+    }
+
+    /**
+     * Listener for the Backup drawer link
+     *
+     * @return
+     *          {@link android.view.View.OnClickListener} for Backup link
+     */
+    protected OnClickListener backupLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog(BACKUP_DIALOG);
+            }
+        };
+    }
+
+    /**
+     * Listener for the Restore drawer link
+     *
+     * @return
+     *          {@link android.view.View.OnClickListener} for Restore link
+     */
+    protected OnClickListener restoreLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog(RESTORE_FROM_FILE_DIALOG);
+            }
+        };
+    }
 	
 	public void saveChosenCharacter()
 	{
@@ -203,46 +263,6 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 			return true;
 		else
 			return false;
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.charactermenu, menu);
-	    return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch(item.getItemId())
-		{
-		
-		case R.id.backupChar:
-			showDialog(BACKUP_DIALOG);
-			return true;
-		case R.id.restoreChar:
-			showDialog(RESTORE_FROM_FILE_DIALOG);
-			return true;
-		
-		case R.id.createChar:
-			createCharacter();
-			return true;
-			
-		case R.id.preferences:
-			showPreferences();
-			return true;
-		
-		case R.id.help:
-			showHelp();
-			return true;
-		
-		case R.id.license:
-			showInfo();
-			return true;
-			
-			default: 
-				return super.onOptionsItemSelected(item);
-		}
 	}
 	
 	public void backupCharacters(String path, String name) {
@@ -316,25 +336,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 	private void createCharacter() {
 		showDialog(CREATE_DIALOG);	
 	}
-	
-	private void showHelp()
-	{
-		Intent intent = new Intent(this, HelpActivity.class);
-		startActivity(intent);
-		
-	}
-	
-	private void showInfo()
-	{
-		Intent intent = new Intent(this, InfoActivity.class);
-		startActivity(intent);
-	}
-	
-	private void showPreferences()
-	{
-		Intent intent = new Intent(this, SpellPreferences.class);
-		startActivityForResult(intent, Constants.SPELL_PREFERENCES);
-	}
+
+
 	
 	private void createDefaultCharacter()
 	{
