@@ -2,6 +2,7 @@ package com.zzoranor.spelldirectory.controllers;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 import android.widget.TextView;
 import com.zzoranor.spelldirectory.R;
@@ -10,19 +11,24 @@ import com.zzoranor.spelldirectory.activity.InfoActivity;
 import com.zzoranor.spelldirectory.activity.SpellPreferences;
 import com.zzoranor.spelldirectory.util.Constants;
 
+import java.util.zip.Inflater;
+
 /**
  * @author morrodin
  *
  * Controller class for universal drawer functions such as wiring links. Any activity using the drawer should
  * include an instance of this.
  */
-public class MainDrawerController {
+public class MainDrawerController{
 
+    DrawerLayout drawer;
     Activity mActivity;
 
-    public MainDrawerController(Activity activity) {
+    public MainDrawerController(Activity activity, DrawerLayout drawer) {
+        this.drawer = drawer;
         this.mActivity = activity;
     }
+
 
     public void setupUniversalDrawerLinks() {
         TextView showPreferencesLink = (TextView) mActivity.findViewById(R.id.drawer_show_preferences_link);
@@ -89,6 +95,7 @@ public class MainDrawerController {
     private void showPreferences() {
         Intent intent = new Intent(mActivity, SpellPreferences.class);
         mActivity.startActivityForResult(intent, Constants.SPELL_PREFERENCES);
+        drawer.closeDrawers();
     }
 
     /**
@@ -97,6 +104,7 @@ public class MainDrawerController {
     private void showHelp() {
         Intent intent = new Intent(mActivity, HelpActivity.class);
         mActivity.startActivity(intent);
+        drawer.closeDrawers();
     }
 
     /**
@@ -105,5 +113,8 @@ public class MainDrawerController {
     private void showLicenseInfo(){
         Intent intent = new Intent(mActivity, InfoActivity.class);
         mActivity.startActivity(intent);
+        drawer.closeDrawers();
     }
+
+
 }

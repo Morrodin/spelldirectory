@@ -14,6 +14,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -33,6 +34,7 @@ import com.zzoranor.spelldirectory.data.Character;
 import com.zzoranor.spelldirectory.database.DbAdapter;
 import com.zzoranor.spelldirectory.database.DbAdapterFactory;
 import com.zzoranor.spelldirectory.util.Constants;
+//import pl.verdigo.libraries.drawer.Drawer;
 
 public class CharacterList extends ListActivity implements OnClickListener, android.content.DialogInterface.OnCancelListener{
 	
@@ -40,6 +42,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 
     private MainDrawerController mDrawerController;
 
+    DrawerLayout mDrawer;
 	DbAdapter sql;
 	final ArrayList<CharacterLabel> character_labels = new ArrayList<CharacterLabel>();
 	Context context;
@@ -71,8 +74,10 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.character_list_activity);
-		
-		mDrawerController = new MainDrawerController(this);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+		mDrawerController = new MainDrawerController(this, mDrawer);
 		
 		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
 		int prefsChosenChar = settings.getInt("chosen_character", -1);
@@ -137,7 +142,6 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 				chosenCharacter = sql.getCharacterData(cLabel.getId());
 				saveChosenCharacter();
 				adapter.setCharacter(chosenCharacter);
-				//selectCharacterClick(view);
 				TabMain.tabHost.setCurrentTabByTag("classes");
 			}
 		});
@@ -159,7 +163,10 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 		
 		lv.setOnTouchListener(gestureListener);
 
-        setupDrawer();
+
+       setupDrawer();
+
+
 
 		reloadList();
 	}
@@ -178,6 +185,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
         mDrawerController.setupUniversalDrawerLinks();
     }
 
+
+
     /**
      * Listener for the Create Character drawer link
      *
@@ -189,6 +198,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
             @Override
             public void onClick(View view) {
                 createCharacter();
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -204,6 +214,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
             @Override
             public void onClick(View view) {
                 showDialog(BACKUP_DIALOG);
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -219,6 +230,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
             @Override
             public void onClick(View view) {
                 showDialog(RESTORE_FROM_FILE_DIALOG);
+                mDrawer.closeDrawers();
             }
         };
     }

@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
@@ -55,7 +56,10 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
 	private int chosen_level;
 	private int currentPosition = -1;
 	private DbAdapter sql;
-	
+
+    private MainDrawerController mDrawerController;
+
+    private DrawerLayout mDrawer;
 	private CustomAdapter adapter;
 	private TextView header;
 	private TextView headerClassField;
@@ -91,6 +95,11 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.spell_list_activity);
 
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.setFocusable(false);
+
+        mDrawerController = new MainDrawerController(this, mDrawer);
+
 		RelativeLayout headerContainer = (RelativeLayout) findViewById(R.id.header_container);	
 		
 		// Prepared Spells Header
@@ -116,8 +125,8 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
 			
 			public void onClick(View v) {
 				InputMethodManager inputManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-				inputManager.toggleSoftInput(0, 0);	
-			}
+                inputManager.toggleSoftInput(0, 0);
+            }
 		});
 
 		spell_labels = new ArrayList<SpellLabel>();
@@ -141,6 +150,7 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
 		// Load/Reload data from the database to populate list. 
 		reloadListFromDB();
 
+//        mDrawerController.getMenuDrawer(R.layout.drawer_spell_list);
         setupDrawer();
 	}
 
@@ -149,7 +159,6 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
      * Wires up the buttons in the navigation drawer.
      */
     private void setupDrawer() {
-        MainDrawerController mDrawerController = new MainDrawerController(this);
         mDrawerController.setupUniversalDrawerLinks();
 
         TextView metamagicLink = (TextView) findViewById(R.id.drawer_metamagic_link);
@@ -172,6 +181,7 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
                 prevLongClickMode = longClickMode;
                 longClickMode = Constants.LONG_CLICK_METAMAGIC;
                 showDialog(DIALOG_METAMAGIC);
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -191,6 +201,7 @@ public class SpellList extends FragmentActivity implements SpellsLongclickModeDi
                 SpellsLongclickModeDialogFragment dialog =
                         new SpellsLongclickModeDialogFragment(SpellList.this, longClickMode, browsingKnownSpells);
                 dialog.show(getSupportFragmentManager(), "longclickMode");
+                mDrawer.closeDrawers();
             }
         };
     }

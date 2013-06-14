@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import android.app.ListActivity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
@@ -38,6 +39,7 @@ public class ClassList extends ListActivity {
 
     private MainDrawerController mDrawerController;
 
+    private DrawerLayout mDrawer;
 	private ArrayList<ClassLabel> class_names;
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -56,37 +58,26 @@ public class ClassList extends ListActivity {
 		Log.d("START", "Starting Spell list.");
         setContentView(R.layout.class_list_activity);
 
-        mDrawerController = new MainDrawerController(this);
-        mDrawerController.setupUniversalDrawerLinks();
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-		//classes = Classes.getInstance();
-				
-			
-			//new Character("Zach");
+        mDrawerController = new MainDrawerController(this, mDrawer);
+        mDrawerController.setupUniversalDrawerLinks();
 		
 		class_names = new ArrayList<ClassLabel>();
 		
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
-				if (gestureDetector.onTouchEvent(event)) {
-					return true;
-				}
-				return false;
-			}
+                return gestureDetector.onTouchEvent(event);
+            }
 		};
 		sql = DbAdapterFactory.getStaticInstance(this);
 		sql.open();
 
 		initList();
-		//currCharacter = sql.getCharacterData(1);
 	}
 
 	private void initList() {
-		//classes = sql.populateClassMap();
-		
-		//sql.setClassesFromDB(classes);
-		//classes.getClassList();
 		ClassLabel labels[] = sql.getClasses();
 		for(int i = 0; i < labels.length;i++)
 		{
@@ -96,13 +87,6 @@ public class ClassList extends ListActivity {
 		
 		adapter = new CustomClassAdapter(this, 
 				R.layout.class_list_item, R.id.class_view_id, CharacterList.chosenCharacter, class_names);
-		/*
-				
-		ArrayAdapter<String> aa = new ArrayAdapter<String>(this,
-				R.layout.class_list_item, R.id.class_view_id, class_names);
-		*/
-		// new CustomAdapter(this, R.layout.class_list_item,
-		// R.id.list_view_name,class_names);
 		setListAdapter(adapter);
 		
 		ListView lv = getListView();
@@ -139,28 +123,6 @@ public class ClassList extends ListActivity {
 
 	}
 
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.classmenu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.toPreparedList:
-			/*
-			Intent prepared_intent = new Intent().setClass(this,
-					PreparedList.class);
-			startActivity(prepared_intent);
-			*/
-			TabMain.tabHost.setCurrentTabByTag("prepared_spells");
-			break;
-		}
-		return super.onOptionsItemSelected(item);
-	}
 
 	@Override
 	protected void onPause() {

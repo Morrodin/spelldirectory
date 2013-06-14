@@ -16,6 +16,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
@@ -59,7 +60,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
 	private static final int SWIPE_MAX_OFF_PATH = 250;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
 
-
+    private MainDrawerController mDrawerController;
 
 	private static final int DIALOG_CONFIRM_CLEAR = 1;
 
@@ -71,6 +72,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
 	private int prevLongClickMode = Constants.LONG_CLICK_USE_SPELL;
 	
 
+    private DrawerLayout mDrawer;
 	private ArrayList<SpellLabel> spell_labels;
 	private CustomAdapter adapter;
 	private TextView header;
@@ -83,6 +85,11 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.spell_list_prepared_activity);
+
+        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer.setFocusable(false);
+
+        mDrawerController = new MainDrawerController(this, mDrawer);
 
         spell_labels = new ArrayList<SpellLabel>();
 		gestureDetector = new GestureDetector(new MyGestureDetector());
@@ -101,6 +108,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
 		sql = DbAdapterFactory.getStaticInstance(this);
 		initList();
 
+        //Setup and initialize drawer
         setupDrawer();
 	}
 
@@ -108,7 +116,6 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
      * Wires the buttons in the navigation drawer for this activity.
      */
     private void setupDrawer() {
-        MainDrawerController mDrawerController = new MainDrawerController(this);
         mDrawerController.setupUniversalDrawerLinks();
 
         TextView resetUsesLink = (TextView) findViewById(R.id.drawer_reset_uses_link);
@@ -127,6 +134,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
             @Override
             public void onClick(View view) {
                 resetSpellUses();
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -136,6 +144,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
             @Override
             public void onClick(View view) {
                 showDialog(DIALOG_CONFIRM_CLEAR);
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -148,6 +157,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
                 PreparedSpellsLongclickModeDialogFragment mLongclickModeDialog =
                         new PreparedSpellsLongclickModeDialogFragment(PreparedList.this, longClickMode);
                 mLongclickModeDialog.show(getSupportFragmentManager(), "longclickMode");
+                mDrawer.closeDrawers();
             }
         };
     }
@@ -156,6 +166,7 @@ public class PreparedList extends FragmentActivity implements PreparedSpellsLong
         CharacterList.chosenCharacter.resetAllSpellUses();
         sql.resetAllUses(CharacterList.chosenCharacter.getCharId());
         adapter.notifyDataSetChanged();
+        mDrawer.closeDrawers();
     }
 
 	public void initList() {
