@@ -1,32 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-
-    <item
-        android:id="@+id/PL_reset_uses"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Reset Uses"/>
-    <item
-        android:id="@+id/prepare_clear"
-        android:icon="@android:drawable/ic_menu_preferences"
-        android:title="Clear List"/>
-    <item
-        android:id="@+id/PL_longclick_mode"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="Longclick Mode"
-        android:visible="true">
-        <menu>
-            <group android:checkableBehavior="single" >
-                <item
-                    android:id="@+id/PL_longClickRemove"
-                    android:icon="@android:drawable/ic_menu_delete"
-                    android:title="Longclick Remove"/>
-                <item
-                    android:id="@+id/PL_longClickUse"
-                    android:icon="@android:drawable/ic_menu_manage"
-                    android:checked="true"
-                    android:title="Longclick Use"/>
-            </group>
-        </menu>
-    </item>
-
+    <group android:checkableBehavior="single" >
+        <item
+            android:id="@+id/PL_longClickRemove"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:title="Longclick Remove"/>
+        <item
+            android:id="@+id/PL_longClickUse"
+            android:icon="@android:drawable/ic_menu_manage"
+            android:checked="true"
+            android:title="Longclick Use"/>
+    </group>
 </menu>

@@ -41,9 +41,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/header_text"
             android:fastScrollEnabled="true"
-            android:id="@android:id/list" />
+            android:id="@+id/spell_list_view" />
 
     </RelativeLayout>
 
-    <include layout="@layout/drawer_classes_list"/>
+    <include layout="@layout/drawer_spell_list"/>
 </android.support.v4.widget.DrawerLayout>

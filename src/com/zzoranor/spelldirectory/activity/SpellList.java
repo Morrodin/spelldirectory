@@ -15,6 +15,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
@@ -39,43 +40,31 @@ import com.zzoranor.spelldirectory.CustomAdapter;
 import com.zzoranor.spelldirectory.R;
 import com.zzoranor.spelldirectory.SpellLabel;
 import com.zzoranor.spelldirectory.TabMain;
+import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.database.DbAdapter;
 import com.zzoranor.spelldirectory.database.DbAdapterFactory;
-import com.zzoranor.spelldirectory.database.WhereSet;
+import com.zzoranor.spelldirectory.fragments.dialogs.SpellsLongclickModeDialogFragment;
 import com.zzoranor.spelldirectory.util.Constants;
-import com.zzoranor.spelldirectory.util.Triple;
 import com.zzoranor.spelldirectory.util.Utility;
 
-public class SpellList extends ListActivity{
+public class SpellList extends FragmentActivity implements SpellsLongclickModeDialogFragment.SpellLongclickModeCallback {
 
-	//ArrayList<Integer> spell_ids;
-	//ArrayList<String> spell_names;
-	ArrayList<SpellLabel> spell_labels;
-	//SharedPreferences sprefs;
-	boolean all_classes;
-	boolean all_levels;
-	int chosen_level;
-	int currentPosition = -1;
-	DbAdapter sql;
+	private ArrayList<SpellLabel> spell_labels;
+	private boolean all_classes;
+	private boolean all_levels;
+	private int chosen_level;
+	private int currentPosition = -1;
+	private DbAdapter sql;
 	
-	CustomAdapter adapter;
-	TextView header;
-	TextView headerClassField;
-	//TextView header_class_text;
-	ImageView search_button;
-	Context context;
-
-	
-	//Classes classes;
-	
-	//private static Character character;
-	
-	public final int DATABASE_DIALOG = 1;
-	//private static final int PROGRESS_INCREMENT = 10;
-	//private static final int PROGRESS_MAX = 1300;
+	private CustomAdapter adapter;
+	private TextView header;
+	private TextView headerClassField;
+	private ImageView search_button;
+	private Context context;
+    private ListView spellList;
 
 	private GestureDetector gestureDetector;
-	View.OnTouchListener gestureListener;
+	private View.OnTouchListener gestureListener;
 	private static final int SWIPE_MIN_DISTANCE = 120;
 	private static final int SWIPE_MAX_OFF_PATH = 250;
 	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
@@ -100,14 +89,8 @@ public class SpellList extends ListActivity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.spell_list_layout);
-		
-		//classes = Classes.getInstance();
-		
-		//LayoutInflater inflater = getLayoutInflater();
-		//header_layout = (LinearLayout) findViewById(R.id.spell_list_header);
-		//header_layout.setFocusable(false);
-		
+		setContentView(R.layout.spell_list_activity);
+
 		RelativeLayout headerContainer = (RelativeLayout) findViewById(R.id.header_container);	
 		
 		// Prepared Spells Header
@@ -125,8 +108,7 @@ public class SpellList extends ListActivity{
 		// Class Name Field
 		headerClassField = (TextView) headerContainer.findViewById(R.id.headerClassField);
 		headerClassField.setText(CharacterList.chosenCharacter.getCurrClassName());
-		
-		
+
 		// Search Button 
 		search_button = (ImageView) headerContainer.findViewById(R.id.searchbutton);
 		search_button.setFocusable(false);
@@ -138,17 +120,8 @@ public class SpellList extends ListActivity{
 			}
 		});
 
-		/*
-		PreferenceManager.setDefaultValues(this, R.layout.preference_layout,
-				true);
-		sprefs = PreferenceManager.getDefaultSharedPreferences(this);
-		*/
-		//spell_names = new ArrayList<String>();
-		//spell_ids = new ArrayList<Integer>();
 		spell_labels = new ArrayList<SpellLabel>();
-		// Loading Spell File.
-		
-		// Gesture-handler mste initieras INNAN listan byggs
+
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -167,8 +140,60 @@ public class SpellList extends ListActivity{
 		initList();
 		// Load/Reload data from the database to populate list. 
 		reloadListFromDB();
+
+        setupDrawer();
 	}
 
+
+    /**
+     * Wires up the buttons in the navigation drawer.
+     */
+    private void setupDrawer() {
+        MainDrawerController mDrawerController = new MainDrawerController(this);
+        mDrawerController.setupUniversalDrawerLinks();
+
+        TextView metamagicLink = (TextView) findViewById(R.id.drawer_metamagic_link);
+        metamagicLink.setOnClickListener(this.metamagicLinkListener());
+
+        TextView longclickModeLink = (TextView) findViewById(R.id.drawer_longclick_link);
+        longclickModeLink.setOnClickListener(this.longclickModeLinkListener());
+    }
+
+    /**
+     * Listener for the Prepare with Metamagic drawer link
+     *
+     * @return
+     *          {@link android.view.View.OnClickListener} for Backup link
+     */
+    protected OnClickListener metamagicLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                prevLongClickMode = longClickMode;
+                longClickMode = Constants.LONG_CLICK_METAMAGIC;
+                showDialog(DIALOG_METAMAGIC);
+            }
+        };
+    }
+
+
+    /**
+     * Listener for the Longclick Mode drawer link
+     *
+     * @return
+     *          {@link android.view.View.OnClickListener} for Longclick Mode link
+     */
+    protected OnClickListener longclickModeLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //We new this each time in order to show the correct currently selected value
+                SpellsLongclickModeDialogFragment dialog =
+                        new SpellsLongclickModeDialogFragment(SpellList.this, longClickMode, browsingKnownSpells);
+                dialog.show(getSupportFragmentManager(), "longclickMode");
+            }
+        };
+    }
 
 	/**
 	 * Clears the current containers holding data for the ListAdapter 
@@ -176,20 +201,10 @@ public class SpellList extends ListActivity{
 	 */
 	private void populateListContainerFromDb()
 	{
-		//"0:  xx  1:  xx  2:  xx  3:  xx  4:  xx  5:  xx  6:  xx  7:  xx  8:  xx  9:  xx  ."
-
-		/*
-		if(classes.numClasses() == 0){
-			sql.setClassesFromDB(classes);
-		}
-		*/
 		
 		sql.populateMetamagicsFromDB();
-		
-		//spell_names.clear();
-		//spell_ids.clear();
 		spell_labels.clear();
-		//SpellDBSet set = sql._getKnownSpells(CharacterList.chosenCharacter.getCharId());
+
 		SpellLabel[] known_spells = sql.getKnownSpells(CharacterList.chosenCharacter.getCharId());
 		Arrays.sort(known_spells);
 		
@@ -200,7 +215,7 @@ public class SpellList extends ListActivity{
 			browsingKnownSpells = true;
 			// Get spells from dynamic database if it is the known spells class. 
 			
-			//SpellLabel[] labels = sql.getKnownSpells(CharacterList.chosenCharacter.getCharId());
+
 			for(SpellLabel label : known_spells)
 			{
 				spell_labels.add(label);
@@ -213,48 +228,15 @@ public class SpellList extends ListActivity{
 			
 			
 			SpellLabel[] labels = sql.getSpellsFromList(CharacterList.chosenCharacter.getCurrClassId());
-			//ArrayList<Triple> extraFilters = new ArrayList<Triple>();
-			//extraFilters.add(new Triple(Constants.SPELL_LVL, Triple.LESS_THAN, 4));
-			//SpellLabel[] labels = sql.getSpellsFromList(CharacterList.chosenCharacter.getCurrClassId(), extraFilters);			
-			
-			for(int i = 0; i < labels.length;i++)
-			{
-				SpellLabel l = labels[i];
-				Pair<Integer, Integer> prep = CharacterList.chosenCharacter.getUsedPrepared(l.getName());
-				l.setPrepared(prep);
-				int cmp = Arrays.binarySearch(known_spells, l);
-				if (cmp >= 0)
-					l.setKnown(true);
-				spell_labels.add(l);
-			}
-			/*
-			// Get spells from static database. 
-			Cursor c = sql.getSpells(CharacterList.chosenCharacter.getCurrClassId());
-			
-			// Order: spell_id,spell_name,spell_lvl, spell_school
-			if (c.moveToFirst()) {
-				while (!c.isAfterLast()) {
-					String name = c.getString(1); 
-					int id = c.getInt(0);
-					int lvl = c.getInt(2);
-					// first = use, 2nd = prepared
-					Pair<Integer, Integer> prep = CharacterList.chosenCharacter.getUsedPrepared(name);
-					String school = c.getString(3);
-					SpellLabel sp = new SpellLabel(name, id, lvl, school,
-							prep.first, prep.second);
-					
-					int cmp = Arrays.binarySearch(known_spells, sp);
-					if (cmp >= 0)
-						sp.setKnown(true);
-					
-					spell_labels.add(sp);
-					//spell_ids.add(id); 
-					
-					c.moveToNext();
-				}
-			}
-			c.close();
-			*/
+
+            for (SpellLabel l : labels) {
+                Pair<Integer, Integer> prep = CharacterList.chosenCharacter.getUsedPrepared(l.getName());
+                l.setPrepared(prep);
+                int cmp = Arrays.binarySearch(known_spells, l);
+                if (cmp >= 0)
+                    l.setKnown(true);
+                spell_labels.add(l);
+            }
 		}
 	}
 	
@@ -266,274 +248,184 @@ public class SpellList extends ListActivity{
 	
 		adapter = new CustomAdapter(this, R.layout.spell_list_item2,
 				R.id.list_view_name, CharacterList.chosenCharacter, spell_labels);
-		ListView lv = getListView();
-		lv.setOnTouchListener(gestureListener);
-		setListAdapter(adapter);
+        spellList = (ListView) findViewById(R.id.spell_list_view);
+		spellList.setOnTouchListener(gestureListener);
+		spellList.setAdapter(adapter);
 		
 		// Enable search. 
-		lv.setTextFilterEnabled(true);
+		spellList.setTextFilterEnabled(true);
 
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
-				
-				//Log.d("EVENT", "OnItemClick");
-				//Log.d("LIST", "View: " + view.toString());
-				RelativeLayout ll = (RelativeLayout) view;
-				View v = ll.findViewById(R.id.list_view_name);
-				Context context = parent.getContext();
-				Intent intent;
-				if (swipe == 0) {
-					//Log.d("EVENT", "-------- SWIPE = 0");
-					intent = new Intent().setClass(context, SingleSpell.class);
-					String s = (String) ((TextView) v).getText();
-					//Log.d("LIST", "1:" + s);
+		spellList.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
 
-					//intent.putExtra("single_spell.name", s);
-					intent.putExtra("single_spell.id", sp.getId());
-					context.startActivity(intent);
-				} else if (swipe == 1) {
-					//Log.d("EVENT", "-------- SWIPE = 1");
-					swipe = 0;
-					TabMain.tabHost.setCurrentTabByTag("prepared_spells");
-				} else {
-					//Log.d("EVENT", "-------- SWIPE = 2");
-					swipe = 0;
-					finish();
-				}
-			}
-		});
+                SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
 
-		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
+                //Log.d("EVENT", "OnItemClick");
+                //Log.d("LIST", "View: " + view.toString());
+                RelativeLayout ll = (RelativeLayout) view;
+                View v = ll.findViewById(R.id.list_view_name);
+                Context context = parent.getContext();
+                Intent intent;
+                if (swipe == 0) {
+                    //Log.d("EVENT", "-------- SWIPE = 0");
+                    intent = new Intent().setClass(context, SingleSpell.class);
+                    String s = (String) ((TextView) v).getText();
+                    //Log.d("LIST", "1:" + s);
 
-				SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
-				
-				Pair<Integer, Integer> numPrepared = CharacterList.chosenCharacter.getUsedPrepared(sp);
-				TextView view_prepare = (TextView) view.findViewById(R.id.list_view_prepare);
-				TextView view_known = (TextView) view.findViewById(R.id.list_view_spell_known);
-				int prepared = numPrepared.second;
-				int left_today = numPrepared.first;
-				
-				switch(longClickMode)
-				{
-				
-				case Constants.LONG_CLICK_PREPARE:
-					// Preparing spells using longclick.  
-					Log.d("SpellList", "Preparing Spell: " + sp.getName() + " to character: " + CharacterList.chosenCharacter.getCharId());
-					/*
-					if(prepared <= 0){
-						prepared = 1;
-						left_today = 1;
-						sql.addPreparedSpellByName(CharacterList.chosenCharacter.getCharId(), 
-								CharacterList.chosenCharacter.getCurrClassId(),  sp.getName(), prepared, sp.getLvl(), left_today);
-					}else{
-						prepared++;
-						left_today++;
-						sql.updatePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp.getName(), prepared, left_today, sp.getLvl());
-					}
-					*/
-					prepared++;
-					left_today++;
-					// Update database.
-					sql.addPreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName(), sp.getLvl(), 
-							CharacterList.chosenCharacter.getCurrClassId(), Constants.SPELL_KNOWN_DEFAULT, left_today, prepared);
-					// Update List. 
-					CharacterList.chosenCharacter.prepareSpell(sp,1);
-					
-					view_prepare.setText(""+left_today+"/"+prepared);
-					Log.d("LIST", "Adding: " + sp.getName()
-							+ " to the prepared spells list.");
-					break;
-					
-				case Constants.LONG_CLICK_REMOVE_PREPARED:
-					// Removing spells using longclick. 
-					if(prepared == 1){
-						view_prepare.setText("");
-						
-						//sql.removePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp.getName());
-						CharacterList.chosenCharacter.removeSpell(sp);
-					}else if(prepared > 1){
-						prepared--;
-						
-						if(prepared < left_today){
-							left_today = prepared;
-						}
-						
-						CharacterList.chosenCharacter.removeSpell(sp);
-						view_prepare.setText(""+left_today+"/"+prepared);
-						
-						Log.d("LIST", "Removing: " + sp.getName()
-								+ " to the prepared spells list.");	
-					}
-					
-					sql.removePreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
-					
-					break;
-					
-					
-				case Constants.LONG_CLICK_METAMAGIC:
-					if(!metaChosen.equals(""))
-					{
-						String metaName = "" + metaChosen;
-						metaName = metaChosen.split("\t")[0];
-						
-						String metaSpellName = metaName + " " + sp.getName();
-						int newlvl = sp.getLvl() + sql.getMetamagicAdjustment(metaName); 
-						
-						Pair<Integer, Integer> metaPrepPair = CharacterList.chosenCharacter.getUsedPrepared(metaSpellName);
-						int metaPrepared = metaPrepPair.second;
-						int metaLeftToday = metaPrepPair.first;
-						metaPrepared++;
-						metaLeftToday++;
-						// Add one charge of new meta spell.
-						/*
-						if(metaPrepared <= 0){
-							metaPrepared = 1;
-							metaLeftToday = 1;
-							sql.addPreparedSpellByName(CharacterList.chosenCharacter.getCharId(), CharacterList.chosenCharacter.getCurrClassId(), metaName + " ", sp.getName(), metaPrepared, newlvl, metaLeftToday);
-						}else{
-							metaPrepared++;
-							metaLeftToday++;
-							sql.updatePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), metaSpellName, metaPrepared, metaLeftToday, newlvl);
-						}
-						*/
-						// update database
-						sql.addPreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), metaSpellName,
-								newlvl, CharacterList.chosenCharacter.getCurrClassId(), Constants.SPELL_KNOWN_DEFAULT, metaLeftToday, metaPrepared);
-						
-						// Update List
-						SpellLabel newSp = new SpellLabel(metaSpellName,sp.getId(), newlvl, sp.getSchool(), metaLeftToday, metaPrepared);
-						CharacterList.chosenCharacter.prepareSpell(newSp,1);
-						
-						// Notify that it is prepared. 
-						Toast.makeText(parent.getContext(), metaSpellName + " prepared.", Toast.LENGTH_SHORT).show();
-						
-						longClickMode = prevLongClickMode;
-					}
-					break;
-					
-				case Constants.LONG_CLICK_KNOWN_SPELL:
-					if(!browsingKnownSpells)
-					{	// Not browsing Known spells. This menu button adds spell to known spells.
-						Log.d(tag, "Adding spell to Known Spells: " + sp.getName() + " for character: " + CharacterList.getChosenCharacterId());
-						
-						if(sp.getId() > -1)
-						{
-							//sql.addSpellAsKnown(CharacterList.getChosenCharacterId(),sp.getId(), sp.getLvl());
-							sql.addKnownSpell(CharacterList.getChosenCharacterId(), sp.getId(), sp.getLvl());
-						}else
-						{
-							Log.e("SpellList", "SpellLabel has id < 0 when adding known spell. ");
-						}
-						view_known.setText("Known");
-						sp.setKnown(true);
-					}else
-					{
-						// Browsing Known Spells. This menu button removes the spell from known spells. 
-						Log.d(tag, "Removing spell from Known Spells: " + sp.getName() + " for character: " + CharacterList.getChosenCharacterId());
-						
-						if(sp.getId() > -1)
-						{
-							sql.removeSpellFromKnown(CharacterList.getChosenCharacterId(),sp.getId());
-							if(browsingKnownSpells)
-							{
-								
-								int idx = Collections.binarySearch(spell_labels, sp);
-								if(idx >= 0)
-								{
-									spell_labels.remove(idx);
-									//spell_ids.remove(idx);
-								}else
-								{
-									Log.w("SpellList", "Trying to remove a spell that is not found. ");
-								}
-							}
-						}else
-						{
-							Log.e("SpellList", "SpellLabel has id < 0 when removing known spell. ");
-						}
-						
-						view_known.setText("");
-						sp.setKnown(false);					
-					}
-					break;
-				}
-				
-				adapter.notifyDataSetChanged();
-				header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
-				return true;
-			}
-		});	
+                    //intent.putExtra("single_spell.name", s);
+                    intent.putExtra("single_spell.id", sp.getId());
+                    context.startActivity(intent);
+                } else if (swipe == 1) {
+                    //Log.d("EVENT", "-------- SWIPE = 1");
+                    swipe = 0;
+                    TabMain.tabHost.setCurrentTabByTag("prepared_spells");
+                } else {
+                    //Log.d("EVENT", "-------- SWIPE = 2");
+                    swipe = 0;
+                    finish();
+                }
+            }
+        });
+
+		spellList.setOnItemLongClickListener(new OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long id) {
+
+                SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
+
+                Pair<Integer, Integer> numPrepared = CharacterList.chosenCharacter.getUsedPrepared(sp);
+                TextView view_prepare = (TextView) view.findViewById(R.id.list_view_prepare);
+                TextView view_known = (TextView) view.findViewById(R.id.list_view_spell_known);
+                int prepared = numPrepared.second;
+                int left_today = numPrepared.first;
+
+                switch (longClickMode) {
+
+                    case Constants.LONG_CLICK_PREPARE:
+                        // Preparing spells using longclick.
+                        Log.d("SpellList", "Preparing Spell: " + sp.getName() + " to character: " + CharacterList.chosenCharacter.getCharId());
+
+                        prepared++;
+                        left_today++;
+                        // Update database.
+                        sql.addPreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName(), sp.getLvl(),
+                                CharacterList.chosenCharacter.getCurrClassId(), Constants.SPELL_KNOWN_DEFAULT, left_today, prepared);
+                        // Update List.
+                        CharacterList.chosenCharacter.prepareSpell(sp, 1);
+
+                        view_prepare.setText("" + left_today + "/" + prepared);
+                        Log.d("LIST", "Adding: " + sp.getName()
+                                + " to the prepared spells list.");
+                        break;
+
+                    case Constants.LONG_CLICK_REMOVE_PREPARED:
+                        // Removing spells using longclick.
+                        if (prepared == 1) {
+                            view_prepare.setText("");
+
+                            //sql.removePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp.getName());
+                            CharacterList.chosenCharacter.removeSpell(sp);
+                        } else if (prepared > 1) {
+                            prepared--;
+
+                            if (prepared < left_today) {
+                                left_today = prepared;
+                            }
+
+                            CharacterList.chosenCharacter.removeSpell(sp);
+                            view_prepare.setText("" + left_today + "/" + prepared);
+
+                            Log.d("LIST", "Removing: " + sp.getName()
+                                    + " to the prepared spells list.");
+                        }
+
+                        sql.removePreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
+
+                        break;
+
+
+                    case Constants.LONG_CLICK_METAMAGIC:
+                        if (!metaChosen.equals("")) {
+                            String metaName = "" + metaChosen;
+                            metaName = metaChosen.split("\t")[0];
+
+                            String metaSpellName = metaName + " " + sp.getName();
+                            int newlvl = sp.getLvl() + sql.getMetamagicAdjustment(metaName);
+
+                            Pair<Integer, Integer> metaPrepPair = CharacterList.chosenCharacter.getUsedPrepared(metaSpellName);
+                            int metaPrepared = metaPrepPair.second;
+                            int metaLeftToday = metaPrepPair.first;
+                            metaPrepared++;
+                            metaLeftToday++;
+
+                            // update database
+                            sql.addPreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), metaSpellName,
+                                    newlvl, CharacterList.chosenCharacter.getCurrClassId(), Constants.SPELL_KNOWN_DEFAULT, metaLeftToday, metaPrepared);
+
+                            // Update List
+                            SpellLabel newSp = new SpellLabel(metaSpellName, sp.getId(), newlvl, sp.getSchool(), metaLeftToday, metaPrepared);
+                            CharacterList.chosenCharacter.prepareSpell(newSp, 1);
+
+                            // Notify that it is prepared.
+                            Toast.makeText(parent.getContext(), metaSpellName + " prepared.", Toast.LENGTH_SHORT).show();
+
+                            longClickMode = prevLongClickMode;
+                        }
+                        break;
+
+                    case Constants.LONG_CLICK_KNOWN_SPELL:
+                        if (!browsingKnownSpells) {    // Not browsing Known spells. This menu button adds spell to known spells.
+                            Log.d(tag, "Adding spell to Known Spells: " + sp.getName() + " for character: " + CharacterList.getChosenCharacterId());
+
+                            if (sp.getId() > -1) {
+                                //sql.addSpellAsKnown(CharacterList.getChosenCharacterId(),sp.getId(), sp.getLvl());
+                                sql.addKnownSpell(CharacterList.getChosenCharacterId(), sp.getId(), sp.getLvl());
+                            } else {
+                                Log.e("SpellList", "SpellLabel has id < 0 when adding known spell. ");
+                            }
+                            view_known.setText("Known");
+                            sp.setKnown(true);
+                        } else {
+                            // Browsing Known Spells. This menu button removes the spell from known spells.
+                            Log.d(tag, "Removing spell from Known Spells: " + sp.getName() + " for character: " + CharacterList.getChosenCharacterId());
+
+                            if (sp.getId() > -1) {
+                                sql.removeSpellFromKnown(CharacterList.getChosenCharacterId(), sp.getId());
+                                if (browsingKnownSpells) {
+
+                                    int idx = Collections.binarySearch(spell_labels, sp);
+                                    if (idx >= 0) {
+                                        spell_labels.remove(idx);
+                                        //spell_ids.remove(idx);
+                                    } else {
+                                        Log.w("SpellList", "Trying to remove a spell that is not found. ");
+                                    }
+                                }
+                            } else {
+                                Log.e("SpellList", "SpellLabel has id < 0 when removing known spell. ");
+                            }
+
+                            view_known.setText("");
+                            sp.setKnown(false);
+                        }
+                        break;
+                }
+
+                adapter.notifyDataSetChanged();
+                header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
+                return true;
+            }
+        });
 	}
 
-	/*
-	private void setHeaderClassText(String className)
-	{
-		if(className.length() > 6 )
-		{
-			// Class Name contains a space reasonably late. Lets split on that. 
-			int idx = className.indexOf(" ");
-			if(idx > 3)
-			{
-				className = className.substring(0, idx);
-			}else
-			{
-				// No space. lets just split on 6 then. 
-				className = className.substring(0, 6);
-			}
-		}
-		header_class_text.setText(className);
-	}
-	*/
 	private void reloadListFromDB() {
 		adapter.setCharacter(CharacterList.chosenCharacter);
 		populateListContainerFromDb();
-		//setHeaderClassText(CharacterList.chosenCharacter.getCurrClassName());
 		header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
 		adapter.notifyDataSetChanged();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.spellmenu, menu);
-		return true;
-	}
-	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem known = menu.findItem(R.id.longclick_known);
-		MenuItem prep = menu.findItem(R.id.longclick_prepare);
-		MenuItem remove = menu.findItem(R.id.longclick_remove);
-		if(browsingKnownSpells)
-		{
-			known.setTitle("Remove Known Spell.");
-		}else
-		{
-			known.setTitle("Add to Known Spells");
-		}
-		
-		switch(longClickMode)
-		{
-		case Constants.LONG_CLICK_KNOWN_SPELL:
-			known.setChecked(true);
-			break;
-			
-		case Constants.LONG_CLICK_PREPARE:
-			prep.setChecked(true);
-			break;
-			
-		case Constants.LONG_CLICK_REMOVE_PREPARED:
-			remove.setChecked(true);
-			break;
-		}
-		
-		return true;
-	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -565,48 +457,11 @@ public class SpellList extends ListActivity{
 		
 		return dialog;
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		/*
-		 * case R.id.prefs: // Skapa Intent och �ppna Preferens-aktiviteten som
-		 * sub Aktivitet. Intent prefIntent = new
-		 * Intent().setClass(this,SpellistPreferences.class);
-		 * startActivityForResult(prefIntent, 1234); break;
-		 */
-		case R.id.longclick_prepare:
-            if (!item.isChecked()) 
-            	item.setChecked(true);
-			longClickMode = Constants.LONG_CLICK_PREPARE;
-			break;
-		
-		case R.id.longclick_remove:
-            if (!item.isChecked()) 
-            	item.setChecked(true);
-			longClickMode = Constants.LONG_CLICK_REMOVE_PREPARED;
-			break;
-			
-		case R.id.longclick_known:
-            if (!item.isChecked()) 
-            	item.setChecked(true);
-			longClickMode = Constants.LONG_CLICK_KNOWN_SPELL;
-			break;
-		
-		case R.id.SL_apply_metamagic:
-			prevLongClickMode = longClickMode;
-			longClickMode = Constants.LONG_CLICK_METAMAGIC;
-			showDialog(DIALOG_METAMAGIC);
-			break;
-			
-		}
-		return true;
-	}
 	
 
 	@Override
 	protected void onPause() {
-		currentPosition = getListView().getFirstVisiblePosition();
+		currentPosition = spellList.getFirstVisiblePosition();
 		super.onPause();
 	}
 
@@ -620,7 +475,7 @@ public class SpellList extends ListActivity{
 		headerClassField.setText(Utility.shortenLongClassNames(CharacterList.chosenCharacter.getCurrClassName(), MAX_LENGTH_CHAR_NAME));
 		
 		reloadListFromDB();	
-		getListView().setSelection(currentPosition);
+		spellList.setSelection(currentPosition);
 				
 		// Check preferences
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -646,14 +501,25 @@ public class SpellList extends ListActivity{
 	}
 
 	public boolean onTouchEvent(MotionEvent event) {
-		//Log.d("EVENT", "OnTouchEvent");
-		if (gestureDetector.onTouchEvent(event))
-			return true;
-		else
-			return false;
+        return gestureDetector.onTouchEvent(event);
 	}
 
-	private class MyGestureDetector extends SimpleOnGestureListener {
+    @Override
+    public void longclickPrepareSelected() {
+        longClickMode = Constants.LONG_CLICK_PREPARE;
+    }
+
+    @Override
+    public void longclickRemoveSelected() {
+        longClickMode = Constants.LONG_CLICK_REMOVE_PREPARED;
+    }
+
+    @Override
+    public void longclickAddToKnownSelected() {
+        longClickMode = Constants.LONG_CLICK_KNOWN_SPELL;
+    }
+
+    private class MyGestureDetector extends SimpleOnGestureListener {
 		
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float vx,
 				float vy) {

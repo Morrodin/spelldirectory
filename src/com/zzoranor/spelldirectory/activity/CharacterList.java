@@ -17,9 +17,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -73,7 +70,7 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.character_list_layout);
+		setContentView(R.layout.character_list_activity);
 		
 		mDrawerController = new MainDrawerController(this);
 		

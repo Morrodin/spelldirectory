@@ -1,8 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-</LinearLayout>
+    <RelativeLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/header_container">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="center_vertical"
+            android:id="@+id/header_text" />
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/header_text"
+            android:layout_alignBottom="@id/header_text"
+            android:layout_alignParentRight="true"
+            android:id="@+id/searchbutton"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_menu_search"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/header_text"
+            android:layout_toLeftOf="@id/searchbutton"
+            android:layout_alignParentTop="true"
+            android:gravity="center"
+            android:visibility="visible"
+            android:id="@+id/headerClassField"/>
+        <ListView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/header_text"
+            android:fastScrollEnabled="true"
+            android:id="@+id/prepared_spells_list_view" />
+
+    </RelativeLayout>
+
+    <include layout="@layout/drawer_spell_list_prepared"/>
+</android.support.v4.widget.DrawerLayout>

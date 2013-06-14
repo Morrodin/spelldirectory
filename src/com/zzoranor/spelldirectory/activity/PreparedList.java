@@ -15,6 +15,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.GestureDetector;
@@ -38,14 +39,18 @@ import com.zzoranor.spelldirectory.CustomAdapter;
 import com.zzoranor.spelldirectory.R;
 import com.zzoranor.spelldirectory.SpellLabel;
 import com.zzoranor.spelldirectory.TabMain;
+import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.database.DbAdapter;
 import com.zzoranor.spelldirectory.database.DbAdapterFactory;
+import com.zzoranor.spelldirectory.fragments.dialogs.PreparedSpellsLongclickModeDialogFragment;
 import com.zzoranor.spelldirectory.util.Constants;
 import com.zzoranor.spelldirectory.util.Utility;
 
-public class PreparedList extends ListActivity {
+public class PreparedList extends FragmentActivity implements PreparedSpellsLongclickModeDialogFragment.PreparedLongclickModeCallback {
 	DbAdapter sql;
 	//private static Character character;
+
+    private PreparedSpellsLongclickModeDialogFragment mLongclickModeDialog;
 
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -66,19 +71,20 @@ public class PreparedList extends ListActivity {
 	private int prevLongClickMode = Constants.LONG_CLICK_USE_SPELL;
 	
 
-	ArrayList<SpellLabel> spell_labels;
-	CustomAdapter adapter;
-	TextView header;
-	TextView headerClassField;
-	ImageView search_button;
+	private ArrayList<SpellLabel> spell_labels;
+	private CustomAdapter adapter;
+	private TextView header;
+	private TextView headerClassField;
+	private ImageView search_button;
+    private ListView spellList;
 
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
-		setContentView(R.layout.spell_list_layout);
-		spell_labels = new ArrayList<SpellLabel>();
+		setContentView(R.layout.spell_list_prepared_activity);
+
+        spell_labels = new ArrayList<SpellLabel>();
 		gestureDetector = new GestureDetector(new MyGestureDetector());
 		gestureListener = new View.OnTouchListener() {
 			public boolean onTouch(View v, MotionEvent event) {
@@ -94,7 +100,63 @@ public class PreparedList extends ListActivity {
 		// Loading Spell File.
 		sql = DbAdapterFactory.getStaticInstance(this);
 		initList();
+
+        setupDrawer();
 	}
+
+    /**
+     * Wires the buttons in the navigation drawer for this activity.
+     */
+    private void setupDrawer() {
+        MainDrawerController mDrawerController = new MainDrawerController(this);
+        mDrawerController.setupUniversalDrawerLinks();
+
+        TextView resetUsesLink = (TextView) findViewById(R.id.drawer_reset_uses_link);
+        resetUsesLink.setOnClickListener(this.resetUsesLinkListener());
+
+        TextView clearListLink = (TextView) findViewById(R.id.drawer_clear_list_link);
+        clearListLink.setOnClickListener(this.clearListLinkListener());
+
+        TextView longclickModeLink = (TextView) findViewById(R.id.drawer_longclick_prepared_link);
+        longclickModeLink.setOnClickListener(longclickModeLinkListener());
+    }
+
+
+    protected OnClickListener resetUsesLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                resetSpellUses();
+            }
+        };
+    }
+
+    protected OnClickListener clearListLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDialog(DIALOG_CONFIRM_CLEAR);
+            }
+        };
+    }
+
+    protected OnClickListener longclickModeLinkListener() {
+        return new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //New this every time so we can show the correct current selection
+                PreparedSpellsLongclickModeDialogFragment mLongclickModeDialog =
+                        new PreparedSpellsLongclickModeDialogFragment(PreparedList.this, longClickMode);
+                mLongclickModeDialog.show(getSupportFragmentManager(), "longclickMode");
+            }
+        };
+    }
+
+    private void resetSpellUses() {
+        CharacterList.chosenCharacter.resetAllSpellUses();
+        sql.resetAllUses(CharacterList.chosenCharacter.getCharId());
+        adapter.notifyDataSetChanged();
+    }
 
 	public void initList() {
 		// This method prepares the spells from database for the defined
@@ -137,89 +199,88 @@ public class PreparedList extends ListActivity {
 		
 		// List adapter
 
-		adapter = new CustomAdapter(this, R.layout.spell_list_item2,
-				R.id.list_view_name, CharacterList.chosenCharacter, spell_labels);
-		setListAdapter(adapter);
+		spellList = (ListView) findViewById(R.id.prepared_spells_list_view);
+		spellList.setTextFilterEnabled(true);
 
-		ListView lv = getListView();
-		lv.setTextFilterEnabled(true);
+        adapter = new CustomAdapter(this, R.layout.spell_list_item2,
+                R.id.list_view_name, CharacterList.chosenCharacter, spell_labels);
+        spellList.setAdapter(adapter);
 
 		// Click listener
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
+		spellList.setOnItemClickListener(new OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
 
-				Context context = parent.getContext();
-				Intent intent;
-				if (swipe != 2) {
-					swipe = 0;
-					intent = new Intent().setClass(context, SingleSpell.class);
+                SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
 
-					intent.putExtra("single_spell.id", sp.getId());
-					context.startActivity(intent);
-				} else {
-					finish();
-				}
+                Context context = parent.getContext();
+                Intent intent;
+                if (swipe != 2) {
+                    swipe = 0;
+                    intent = new Intent().setClass(context, SingleSpell.class);
 
-			}
-		});
+                    intent.putExtra("single_spell.id", sp.getId());
+                    context.startActivity(intent);
+                } else {
+                    finish();
+                }
+
+            }
+        });
 
 		// LongClickListener
-		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
-				
-				Pair<Integer, Integer> numPrepared = CharacterList.chosenCharacter
-						.getUsedPrepared(sp);
-				int prepared = numPrepared.second;
-				int left_today = numPrepared.first;
-				switch (longClickMode) 
-				{
-				
-				case Constants.LONG_CLICK_REMOVE_PREPARED:
-					if (prepared == 1) {
-						CharacterList.chosenCharacter.removeSpell(sp);
-						//sql.removePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp.getName());
-						int idx = Collections.binarySearch(spell_labels, sp);
-						spell_labels.remove(idx);
-					} else if (prepared > 1) {
-						prepared--;
-						if (prepared < left_today)
-							left_today = prepared;
-						CharacterList.chosenCharacter.removeSpell(sp);
+		spellList.setOnItemLongClickListener(new OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long id) {
+
+                SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
+
+                Pair<Integer, Integer> numPrepared = CharacterList.chosenCharacter
+                        .getUsedPrepared(sp);
+                int prepared = numPrepared.second;
+                int left_today = numPrepared.first;
+                switch (longClickMode) {
+
+                    case Constants.LONG_CLICK_REMOVE_PREPARED:
+                        if (prepared == 1) {
+                            CharacterList.chosenCharacter.removeSpell(sp);
+                            //sql.removePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp.getName());
+                            int idx = Collections.binarySearch(spell_labels, sp);
+                            spell_labels.remove(idx);
+                        } else if (prepared > 1) {
+                            prepared--;
+                            if (prepared < left_today)
+                                left_today = prepared;
+                            CharacterList.chosenCharacter.removeSpell(sp);
 						/*
 						sql.updatePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp
 								.getName(), prepared, left_today, sp.getLvl());
 						*/
-						//Log.d("LIST", "Removing: " + sp.getName()+ " from the prepared spells list.");
-					}
-					
-					sql.removePreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
-					break;
+                            //Log.d("LIST", "Removing: " + sp.getName()+ " from the prepared spells list.");
+                        }
 
-				case Constants.LONG_CLICK_USE_SPELL:
-					left_today--;
-					CharacterList.chosenCharacter.useSpell(sp);
-					
-					sql.useSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
+                        sql.removePreparedSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
+                        break;
+
+                    case Constants.LONG_CLICK_USE_SPELL:
+                        left_today--;
+                        CharacterList.chosenCharacter.useSpell(sp);
+
+                        sql.useSpell(CharacterList.chosenCharacter.getCharId(), sp.getId(), sp.getName());
 					/*
 					sql.updatePreparedSpellByName(CharacterList.chosenCharacter.getCharId(), sp
 							.getName(), prepared, left_today, sp.getLvl());
 							*/
-					break;
+                        break;
 
-				}
+                }
 
-				header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
-				adapter.notifyDataSetChanged();
-				return true;
-			}
-		});
-		lv.setOnTouchListener(gestureListener);
+                header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
+                adapter.notifyDataSetChanged();
+                return true;
+            }
+        });
+		spellList.setOnTouchListener(gestureListener);
 	}
 
 	private void reloadList()
@@ -233,7 +294,7 @@ public class PreparedList extends ListActivity {
 	
 	@Override
 	protected void onPause() {
-		currentPosition = getListView().getFirstVisiblePosition();
+		currentPosition = spellList.getFirstVisiblePosition();
 		super.onPause();
 	}
 	
@@ -267,65 +328,8 @@ public class PreparedList extends ListActivity {
 		super.onResume();
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.preparedmenu, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		MenuItem use = menu.findItem(R.id.PL_longClickUse);
-		MenuItem remove = menu.findItem(R.id.PL_longClickRemove);
-		
-		switch(longClickMode)
-		{
-		case Constants.LONG_CLICK_USE_SPELL:
-			use.setChecked(true);
-			break;
-			
-		case Constants.LONG_CLICK_REMOVE_PREPARED:
-			remove.setChecked(true);
-			break;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.PL_longClickRemove:
-            if (!item.isChecked()) 
-            	item.setChecked(true);
-			longClickMode = Constants.LONG_CLICK_REMOVE_PREPARED;
-			break;
-
-		case R.id.PL_longClickUse:
-            if (!item.isChecked()) 
-            	item.setChecked(true);
-			longClickMode = Constants.LONG_CLICK_USE_SPELL;
-			break;
-
-		case R.id.prepare_clear:
-			showDialog(DIALOG_CONFIRM_CLEAR);
-			break;
-
-		case R.id.PL_reset_uses:
-			CharacterList.chosenCharacter.resetAllSpellUses();
-			sql.resetAllUses(CharacterList.chosenCharacter.getCharId());
-			((CustomAdapter) getListAdapter()).notifyDataSetChanged();
-			break;
-
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
 	public boolean onTouchEvent(MotionEvent event) {
-		if (gestureDetector.onTouchEvent(event))
-			return true;
-		else
-			return false;
+        return gestureDetector.onTouchEvent(event);
 	}
 
 	@Override
@@ -367,7 +371,25 @@ public class PreparedList extends ListActivity {
 		return dialog;
 	}
 
-	private class MyGestureDetector extends SimpleOnGestureListener {
+    /**
+     * Callback method for when "Longclick Remove" is called from the Longclick Mode dialog.
+     * Sets the longclick mode to remove the spell from the list.
+     */
+    @Override
+    public void longclickRemoveSelected() {
+        longClickMode = Constants.LONG_CLICK_REMOVE_PREPARED;
+    }
+
+    /**
+     * Callback method for when "Longclick Use" is called from the Longclick Mode dialog.
+     * Sets the longclick mode to use one preperation of the spell from the list.
+     */
+    @Override
+    public void longclickUseSelected() {
+        longClickMode = Constants.LONG_CLICK_USE_SPELL;
+    }
+
+    private class MyGestureDetector extends SimpleOnGestureListener {
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float vx,
 				float vy) {
 			Log.d("EVENT", "OnFling");

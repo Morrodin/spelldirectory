@@ -19,7 +19,7 @@
             android:id="@android:id/list"/>
 
         <!--Navigation drawer-->
-        <include layout="@layout/drawer_character_list"/>
+        <include layout="@layout/drawer_classes_list"/>
     </android.support.v4.widget.DrawerLayout>
 
 

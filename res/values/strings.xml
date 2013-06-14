@@ -88,4 +88,8 @@
     <string name="drawer_restore">Restore from File</string>
     <string name="drawer_help">Help</string>
     <string name="drawer_license">License Info</string>
+    <string name="drawer_metamagic">Prepare with Metamagic</string>
+    <string name="drawer_longclick">Longclick Mode</string>
+    <string name="drawer_reset_uses">Reset Uses</string>
+    <string name="drawer_clear_list">Clear List</string>
 </resources>

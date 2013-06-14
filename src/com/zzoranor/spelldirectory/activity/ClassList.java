@@ -22,6 +22,7 @@ import com.zzoranor.spelldirectory.ClassLabel;
 import com.zzoranor.spelldirectory.CustomClassAdapter;
 import com.zzoranor.spelldirectory.R;
 import com.zzoranor.spelldirectory.TabMain;
+import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.data.Classes;
 import com.zzoranor.spelldirectory.database.DbAdapter;
 import com.zzoranor.spelldirectory.database.DbAdapterFactory;
@@ -34,7 +35,9 @@ public class ClassList extends ListActivity {
 	//private static final int PROGRESS_INCREMENT = 10;
 	//private static final int PROGRESS_MAX = 1250;
 	//public static Character currCharacter;
-	
+
+    private MainDrawerController mDrawerController;
+
 	private ArrayList<ClassLabel> class_names;
 	private GestureDetector gestureDetector;
 	View.OnTouchListener gestureListener;
@@ -51,7 +54,11 @@ public class ClassList extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Log.d("START", "Starting Spell list.");
-		
+        setContentView(R.layout.class_list_activity);
+
+        mDrawerController = new MainDrawerController(this);
+        mDrawerController.setupUniversalDrawerLinks();
+
 		//classes = Classes.getInstance();
 				
 			
@@ -113,9 +120,9 @@ public class ClassList extends ListActivity {
 					//		SpellList.class);
 					//CharacterList.chosenCharacter.curr_class_name = s;
 					//CharacterList.chosenCharacter.curr_class_id = classes.get(s);
-					
+
 					TabMain.tabHost.setCurrentTabByTag("class_spells");
-					
+
 					//spells_intent.putExtra("spellList.class_name", s);
 					//spells_intent.putExtra("spellList.class_id", classes.get(s));
 					//context.startActivity(spells_intent);
