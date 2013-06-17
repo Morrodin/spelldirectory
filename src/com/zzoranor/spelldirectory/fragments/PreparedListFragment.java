@@ -8,22 +8,20 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Pair;
 import android.view.*;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
 import com.zzoranor.spelldirectory.CustomAdapter;
 import com.zzoranor.spelldirectory.OnRefreshListener;
 import com.zzoranor.spelldirectory.R;
 import com.zzoranor.spelldirectory.SpellLabel;
-import com.zzoranor.spelldirectory.activity.CharacterList;
 import com.zzoranor.spelldirectory.activity.SingleSpell;
 import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.data.Character;
 import com.zzoranor.spelldirectory.database.DbAdapter;
-import com.zzoranor.spelldirectory.database.DbAdapterFactory;
 import com.zzoranor.spelldirectory.fragments.dialogs.ConfirmClearPreparedSpellListDialogFragment;
 import com.zzoranor.spelldirectory.fragments.dialogs.PreparedSpellsLongclickModeDialogFragment;
 import com.zzoranor.spelldirectory.services.SqlService;
 import com.zzoranor.spelldirectory.util.Constants;
+import com.zzoranor.spelldirectory.util.SerializablePair;
 import com.zzoranor.spelldirectory.util.Utility;
 
 import java.util.ArrayList;
@@ -250,7 +248,7 @@ public class PreparedListFragment extends Fragment implements OnRefreshListener,
 
                 SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
 
-                Pair<Integer, Integer> numPrepared = chosenCharacter
+                SerializablePair<Integer, Integer> numPrepared = chosenCharacter
                         .getUsedPrepared(sp);
                 prepared = numPrepared.second;
                 left_today = numPrepared.first;
@@ -314,7 +312,7 @@ public class PreparedListFragment extends Fragment implements OnRefreshListener,
     private void reloadList() {
         chosenCharacter.sortPrepared();
         spell_labels.clear();
-        spell_labels.addAll(chosenCharacter.getPrepared_spells());
+        spell_labels.addAll(chosenCharacter.getPreparedSpells());
         header.setText(chosenCharacter.getSpanString(headerLines));
         adapter.notifyDataSetChanged();
     }

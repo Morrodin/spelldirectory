@@ -1,17 +1,21 @@
 package com.zzoranor.spelldirectory;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import android.util.Pair;
 import android.view.View;
 import android.widget.TextView;
+import com.zzoranor.spelldirectory.util.SerializablePair;
 
-public class SpellLabel implements Comparable<SpellLabel> {
+public class SpellLabel implements Comparable<SpellLabel>, Serializable {
+
+    private static final long serialVersionUID = 68732567123L;
 	private String spell_name;
 	private int spell_id;
 	private int spell_lvl;
 	private String spell_school;
-	private Pair<Integer, Integer> numPrepared;
+	private SerializablePair<Integer, Integer> numPrepared;
 	private boolean known = false;
 	private static Comparator<SpellLabel> lvlNameComparator;
 
@@ -28,7 +32,7 @@ public class SpellLabel implements Comparable<SpellLabel> {
 		this.spell_id = id;
 		this.spell_lvl = lvl;
 		this.spell_school = school;
-		this.numPrepared = new Pair<Integer, Integer>(0,0);
+		this.numPrepared = new SerializablePair<Integer, Integer>(0,0);
 	}
 	
 	public SpellLabel(String str, int id, int lvl, String school,
@@ -37,7 +41,7 @@ public class SpellLabel implements Comparable<SpellLabel> {
 		this.spell_id = id;
 		this.spell_lvl = lvl;
 		this.spell_school = school;
-		this.numPrepared = new Pair<Integer, Integer>(left_today, prepared);
+		this.numPrepared = new SerializablePair<Integer, Integer>(left_today, prepared);
 	}
 
 	public SpellLabel(View v) {
@@ -68,7 +72,7 @@ public class SpellLabel implements Comparable<SpellLabel> {
 				prepared = Integer.parseInt(tokens[1]);
 			}
 		}
-		numPrepared = new Pair<Integer, Integer>(left_today, prepared);
+		numPrepared = new SerializablePair<Integer, Integer>(left_today, prepared);
 	}
 
 	public int getLvl() {
@@ -111,7 +115,7 @@ public class SpellLabel implements Comparable<SpellLabel> {
 		return numPrepared.second;
 	}
 
-	public void setPrepared(Pair<Integer, Integer> prepared) {
+	public void setPrepared(SerializablePair<Integer, Integer> prepared) {
 		this.numPrepared = prepared;
 	}
 

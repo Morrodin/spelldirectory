@@ -44,7 +44,7 @@ public class CharacterListFragment extends Fragment implements View.OnClickListe
     final ArrayList<CharacterLabel> character_labels = new ArrayList<CharacterLabel>();
     Context context;
     CustomCharacterAdapter adapter;
-    private static com.zzoranor.spelldirectory.data.Character chosenCharacter;
+    private com.zzoranor.spelldirectory.data.Character chosenCharacter;
     private GestureDetector gestureDetector;
     View.OnTouchListener gestureListener;
 
@@ -101,6 +101,7 @@ public class CharacterListFragment extends Fragment implements View.OnClickListe
                 return false;
             }
         };
+
 
         sql = mSqlService.getSqlAdapter();
         sql.getCharacters(character_labels);
@@ -174,12 +175,12 @@ public class CharacterListFragment extends Fragment implements View.OnClickListe
         editor.commit();
     }
 
-    public static Character getChosenCharacter()
+    public Character getChosenCharacter()
     {
         return chosenCharacter;
     }
 
-    public static int getChosenCharacterId()
+    public int getChosenCharacterId()
     {
         return chosenCharacter.getCharId();
     }

@@ -24,6 +24,7 @@ import com.zzoranor.spelldirectory.fragments.dialogs.PrepareWithMetamagicDialogF
 import com.zzoranor.spelldirectory.fragments.dialogs.SpellsLongclickModeDialogFragment;
 import com.zzoranor.spelldirectory.services.SqlService;
 import com.zzoranor.spelldirectory.util.Constants;
+import com.zzoranor.spelldirectory.util.SerializablePair;
 import com.zzoranor.spelldirectory.util.Utility;
 
 import java.util.ArrayList;
@@ -178,7 +179,7 @@ public class SpellListFragment extends Fragment implements OnRefreshListener,
             SpellLabel[] labels = sql.getSpellsFromList(chosenCharacter.getCurrClassId());
 
             for (SpellLabel l : labels) {
-                Pair<Integer, Integer> prep = chosenCharacter.getUsedPrepared(l.getName());
+                SerializablePair<Integer, Integer> prep = chosenCharacter.getUsedPrepared(l.getName());
                 l.setPrepared(prep);
                 int cmp = Arrays.binarySearch(known_spells, l);
                 if (cmp >= 0)
@@ -201,7 +202,7 @@ public class SpellListFragment extends Fragment implements OnRefreshListener,
 
                 SpellLabel sp = (SpellLabel) parent.getItemAtPosition(position);
 
-                Pair<Integer, Integer> numPrepared = chosenCharacter.getUsedPrepared(sp);
+                SerializablePair<Integer, Integer> numPrepared = chosenCharacter.getUsedPrepared(sp);
                 view_prepare = (TextView) view.findViewById(R.id.list_view_prepare);
                 view_known = (TextView) view.findViewById(R.id.list_view_spell_known);
                 prepared = numPrepared.second;
@@ -324,7 +325,7 @@ public class SpellListFragment extends Fragment implements OnRefreshListener,
             String metaSpellName = metaName + " " + sp.getName();
             int newlvl = sp.getLvl() + sql.getMetamagicAdjustment(metaName);
 
-            Pair<Integer, Integer> metaPrepPair = chosenCharacter.getUsedPrepared(metaSpellName);
+            SerializablePair<Integer, Integer> metaPrepPair = chosenCharacter.getUsedPrepared(metaSpellName);
             int metaPrepared = metaPrepPair.second;
             int metaLeftToday = metaPrepPair.first;
             metaPrepared++;
@@ -507,7 +508,8 @@ public class SpellListFragment extends Fragment implements OnRefreshListener,
         longclickModeLink.setOnClickListener(this.longclickModeLinkListener());
 
         reloadListFromDB();
-        adapter.getFilter().filter(null);
+        adapter.notifyDataSetChanged();
+//        adapter.getFilter().filter(null);
     }
 
     public boolean onTouchEvent(MotionEvent event) {

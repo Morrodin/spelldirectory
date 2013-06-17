@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import com.zzoranor.spelldirectory.util.SerializablePair;
 
 public class CustomAdapter extends ArrayAdapter<SpellLabel> {
 	private LayoutInflater vi;
@@ -88,7 +89,7 @@ public class CustomAdapter extends ArrayAdapter<SpellLabel> {
 			holder.view_name.setText(o.getName());
 			holder.view_lvl.setText("" + o.getLvl());
 			holder.view_school.setText(o.getSchool());
-			Pair<Integer, Integer> numPrepared = character.getUsedPrepared(o);
+            SerializablePair<Integer, Integer> numPrepared = character.getUsedPrepared(o);
 			if(numPrepared.second == 0){
 				holder.view_prepare.setText("");
 			}else{

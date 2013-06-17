@@ -3,7 +3,6 @@ package com.zzoranor.spelldirectory.data;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -15,6 +14,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
+import com.zzoranor.spelldirectory.util.SerializablePair;
 
 public class Character implements Serializable {
 
@@ -26,21 +26,21 @@ public class Character implements Serializable {
 	private String curr_class_name = "";
 	private int curr_class_id = 0;
 	
-	ArrayList<SpellLabel> prepared_spells;
-	HashMap<String,  Pair<Integer,Integer> > map_prep_spells;
+	PreparedSpellList preparedSpells;
+	PreparedSpellMap preparedSpellMap;
 	
 	public Character(int id, String name){
 		char_id = id;
 		charName = name;
-		prepared_spells = new ArrayList<SpellLabel>();
-		map_prep_spells = new HashMap<String, Pair<Integer,Integer> >();
+		preparedSpells = new PreparedSpellList(new ArrayList<SpellLabel>());
+		preparedSpellMap.setPreparedSpellMap(new HashMap<String, SerializablePair<Integer, Integer>>());
 		prepSpellLevels = new int[10];
 	}
 	
-	public Character(String name, ArrayList<SpellLabel> prepared_spells,HashMap<String, Pair<Integer,Integer> > map_prep_spells){
+	public Character(String name, ArrayList<SpellLabel> preparedSpells,HashMap<String, SerializablePair<Integer,Integer> > preparedSpellMap){
 		charName = name;
-		this.prepared_spells = prepared_spells;
-		this.map_prep_spells = map_prep_spells;
+		this.preparedSpells.setPreparedSpellList(preparedSpells);
+		this.preparedSpellMap.setPreparedSpellMap(preparedSpellMap);
 		prepSpellLevels = new int[10];
 	}
 	
@@ -49,8 +49,8 @@ public class Character implements Serializable {
 		charName = name;
 		curr_class_name = chosen_class;
 		curr_class_id = class_id;
-		prepared_spells = new ArrayList<SpellLabel>();
-		map_prep_spells = new HashMap<String, Pair<Integer,Integer> >();
+        preparedSpells = new PreparedSpellList(new ArrayList<SpellLabel>());
+		preparedSpellMap = new PreparedSpellMap(new HashMap<String, SerializablePair<Integer,Integer> >());
 		prepSpellLevels = new int[10];
 	}
 
@@ -85,21 +85,21 @@ public class Character implements Serializable {
 	public void setCharName(String charName) {
 		this.charName = charName;
 	}
-	public ArrayList<SpellLabel> getPrepared_spells() {
-		return prepared_spells;
+	public ArrayList<SpellLabel> getPreparedSpells() {
+		return preparedSpells.getPreparedSpellList();
 	}
-	public void setPrepared_spells(ArrayList<SpellLabel> preparedSpells) {
-		prepared_spells = preparedSpells;
+	public void setPreparedSpells(ArrayList<SpellLabel> preparedSpells) {
+		this.preparedSpells.setPreparedSpellList(preparedSpells);
 	}
-	public HashMap<String,  Pair<Integer,Integer> > getMap_prep_spells() {
-		return map_prep_spells;
+	public HashMap<String,  SerializablePair<Integer,Integer> > getPreparedSpellMap() {
+		return preparedSpellMap.getPreparedSpellMap();
 	}
-	public void setMap_prep_spells(HashMap<String,  Pair<Integer,Integer> > mapPrepSpells) {
-		map_prep_spells = mapPrepSpells;
+	public void setPreparedSpellMap(HashMap<String, SerializablePair<Integer, Integer>> mapPrepSpells) {
+		preparedSpellMap.setPreparedSpellMap(mapPrepSpells);
 	}
 
-	public Iterator<Map.Entry<String,Pair<Integer, Integer> > > getEntryIterator(){
-		return map_prep_spells.entrySet().iterator();
+	public Iterator<Map.Entry<String,SerializablePair<Integer, Integer> > > getEntryIterator(){
+		return preparedSpellMap.getPreparedSpellMap().entrySet().iterator();
 	}
 	
 	private static int[][] lineConfig = new int[][]{{10}, {5, 5}, {4,3,3}, {3,3,2,2}};
@@ -172,18 +172,18 @@ public class Character implements Serializable {
 		
 	}
 	
-	public Pair<Integer,Integer> getUsedPrepared(SpellLabel sp){
-		Pair<Integer, Integer> numPrepared = map_prep_spells.get(sp.getName());
+	public SerializablePair<Integer,Integer> getUsedPrepared(SpellLabel sp){
+		SerializablePair<Integer, Integer> numPrepared = preparedSpellMap.getPreparedSpellMap().get(sp.getName());
 		if(numPrepared == null)
-			return new Pair<Integer,Integer>(0,0);
+			return new SerializablePair<Integer,Integer>(0,0);
 		else
 			return numPrepared;
 	}
 	
-	public Pair<Integer,Integer> getUsedPrepared(String spell_name){
-		Pair<Integer, Integer> numPrepared = map_prep_spells.get(spell_name);
+	public SerializablePair<Integer,Integer> getUsedPrepared(String spell_name){
+		SerializablePair<Integer, Integer> numPrepared = preparedSpellMap.getPreparedSpellMap().get(spell_name);
 		if(numPrepared == null)
-			return new Pair<Integer,Integer>(0,0);
+			return new SerializablePair<Integer,Integer>(0,0);
 		else
 			return numPrepared;
 	}
@@ -193,39 +193,40 @@ public class Character implements Serializable {
 	}
 	
 	public void prepareSpell(SpellLabel sp,int numUses, int numToPrepare){
-		Pair<Integer, Integer> num = getUsedPrepared(sp.getName());
+		SerializablePair<Integer, Integer> num = getUsedPrepared(sp.getName());
 		int lvl = sp.getLvl();
 		if(0 <= lvl && lvl < 10){
 			prepSpellLevels[lvl] = prepSpellLevels[lvl] + numToPrepare;
 		}
-		if(num.second <= 0){
-			prepared_spells.add(sp);
-			map_prep_spells.put(sp.getName(), new Pair<Integer,Integer>(numUses,numToPrepare));
+		if(((Integer) num.second) <= 0){
+			preparedSpells.getPreparedSpellList().add(sp);
+			preparedSpellMap.getPreparedSpellMap().put(sp.getName(), new SerializablePair<Integer, Integer>(numUses, numToPrepare));
 		}else{
-			map_prep_spells.put(sp.getName(), new Pair<Integer,Integer>(num.first + numUses,num.second + numToPrepare));
+			preparedSpellMap.getPreparedSpellMap().put(sp.getName(),
+                    new SerializablePair<Integer, Integer>(((Integer) num.first) + numUses, ((Integer)num.second) + numToPrepare));
 		} 
 	}
 	
 	public void resetAllSpellUses(){
-		for(SpellLabel sp : prepared_spells){
-			Pair<Integer,Integer> curr = map_prep_spells.get(sp.getName());
-			map_prep_spells.put(sp.getName(), Pair.create(curr.second, curr.second));
+		for(SpellLabel sp : preparedSpells.getPreparedSpellList()){
+            SerializablePair<Integer,Integer> curr = preparedSpellMap.getPreparedSpellMap().get(sp.getName());
+			preparedSpellMap.getPreparedSpellMap().put(sp.getName(), SerializablePair.create(curr.second, curr.second));
 		}
 	}
 	
 	public void resetSpellUse(String spell_name){
-		Pair<Integer,Integer> curr = map_prep_spells.get(spell_name);
-		map_prep_spells.put(spell_name, Pair.create(curr.second, curr.second));
+        SerializablePair<Integer,Integer> curr = preparedSpellMap.getPreparedSpellMap().get(spell_name);
+		preparedSpellMap.getPreparedSpellMap().put(spell_name, SerializablePair.create(curr.second, curr.second));
 	}
 	
 	public void resetSpellUse(SpellLabel sp){
-		Pair<Integer,Integer> curr = map_prep_spells.get(sp.getName());
-		map_prep_spells.put(sp.getName(), Pair.create(curr.second, curr.second));
+        SerializablePair<Integer,Integer> curr = preparedSpellMap.getPreparedSpellMap().get(sp.getName());
+		preparedSpellMap.getPreparedSpellMap().put(sp.getName(), SerializablePair.create(curr.second, curr.second));
 	}
 	public void useSpell(String spell_name){
-		Pair<Integer,Integer> curr = map_prep_spells.get(spell_name);
+        SerializablePair<Integer,Integer> curr = preparedSpellMap.getPreparedSpellMap().get(spell_name);
 		int left_today = (curr.first-1 >= 0? curr.first-1 : 0);
-		map_prep_spells.put(spell_name, Pair.create(left_today, curr.second));
+		preparedSpellMap.getPreparedSpellMap().put(spell_name, SerializablePair.create(left_today, curr.second));
 	}
 	
 	public void useSpell(SpellLabel sp){
@@ -233,7 +234,7 @@ public class Character implements Serializable {
 	}
 	
 	public void removeSpell(SpellLabel sp){
-		Pair<Integer, Integer> num = getUsedPrepared(sp.getName());
+		SerializablePair<Integer, Integer> num = getUsedPrepared(sp.getName());
 		int prepared = num.second-1;
 		int left_today = num.first; 
 		int lvl = sp.getLvl();
@@ -246,10 +247,10 @@ public class Character implements Serializable {
 			left_today = prepared;
 		
 		if(prepared > 0){
-			map_prep_spells.put(sp.getName(),  new Pair<Integer,Integer>(left_today,prepared));
+			preparedSpellMap.getPreparedSpellMap().put(sp.getName(), new SerializablePair<Integer, Integer>(left_today, prepared));
 		}else if(prepared <= 0){
-			prepared_spells.remove(sp);
-			map_prep_spells.remove(sp.getName());
+			preparedSpells.getPreparedSpellList().remove(sp);
+			preparedSpellMap.getPreparedSpellMap().remove(sp.getName());
 		}
 	}
 	
@@ -260,15 +261,15 @@ public class Character implements Serializable {
 	
 	
 	public void removeAll(){
-		prepared_spells.clear();
-		map_prep_spells.clear();
+		preparedSpells.getPreparedSpellList().clear();
+		preparedSpellMap.getPreparedSpellMap().clear();
 		for(int i = 0; i < 10; i++){
 			prepSpellLevels[i] = 0;
 		}
 	}
 
 	public void sortPrepared() {
-		Collections.sort(prepared_spells);
+		Collections.sort(preparedSpells.getPreparedSpellList());
 	}
 
 	public void setCurrentClass(int id, String name) {

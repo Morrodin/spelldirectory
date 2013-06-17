@@ -293,7 +293,7 @@
 //	{
 //		CharacterList.chosenCharacter.sortPrepared();
 //		spell_labels.clear();
-//		spell_labels.addAll(CharacterList.chosenCharacter.getPrepared_spells());
+//		spell_labels.addAll(CharacterList.chosenCharacter.getPreparedSpells());
 //		header.setText(CharacterList.chosenCharacter.getSpanString(headerLines));
 //		adapter.notifyDataSetChanged();
 //	}
