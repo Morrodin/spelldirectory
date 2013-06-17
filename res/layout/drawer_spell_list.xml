@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/spell_list_drawer_layout"
               android:orientation="vertical"
               android:layout_width="240dp"
               android:layout_gravity="left"
-              android:background="@color/midnight_blue"
+              android:background="@color/white_background"
               android:layout_height="match_parent">
 
     <LinearLayout

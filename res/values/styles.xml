@@ -5,6 +5,27 @@
         <item name="android:textColor">#6699CC</item>
     </style>
 
+    <style name="Theme.AppTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
+    </style>
+
+    <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/vpi__tab_indicator</item>
+        <item name="android:paddingLeft">22dip</item>
+        <item name="android:paddingRight">22dip</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:textAppearance">@style/CustomTabPageIndicator.Text</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="CustomTabPageIndicator.Text" parent="TextAppearance.TabPageIndicator">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/vpi__light_theme</item>
+    </style>
+
     <style name="TextParagraph" parent="@android:style/TextAppearance.Small">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -34,9 +55,7 @@
     <style name="drawer_border">
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_marginLeft">10dp</item>
-        <item name="android:layout_marginRight">10dp</item>
-        <item name="android:background">@drawable/shape_black_gradient_rect</item>
+        <item name="android:background">@color/light_gray</item>
     </style>
 
 </resources>

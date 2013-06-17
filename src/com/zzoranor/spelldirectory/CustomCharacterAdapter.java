@@ -84,9 +84,9 @@ public class CustomCharacterAdapter extends ArrayAdapter<CharacterLabel> {
 			holder.view.setText(o.getName());
 			
 			if(character != null && o.getId() == character.getCharId()){
-				holder.view.setTextColor(Color.CYAN);
+				holder.view.setTextColor(context.getResources().getColor(R.color.ics_blue));
 			}else{
-				holder.view.setTextColor(Color.LTGRAY);
+				holder.view.setTextColor(Color.GRAY);
 			}
 		}
 		return v;

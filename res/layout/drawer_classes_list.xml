@@ -4,7 +4,7 @@
               android:orientation="vertical"
               android:layout_width="240dp"
               android:layout_gravity="left"
-              android:background="@color/midnight_blue"
+              android:background="@color/white_background"
               android:layout_height="match_parent">
 
     <include layout="@layout/drawer_main"/>

@@ -80,6 +80,9 @@
     <string name="preplist_default_long_click_action_title">Prepared List Longclick Action</string>
     <string name="preplist_default_long_click_action_summary">Choose the LongClick Action that the app will default to on the Prepared List. </string>
 
+    <!--Character list-->
+    <string name="char_list_header">CHOOSE A CHARACTER</string>
+
     <!--Drawer-->
     <string name="drawer_header">Menu</string>
     <string name="drawer_create_character">Create New Character</string>
@@ -92,4 +95,8 @@
     <string name="drawer_longclick">Longclick Mode</string>
     <string name="drawer_reset_uses">Reset Uses</string>
     <string name="drawer_clear_list">Clear List</string>
+    <string name="drawer_rechoose_character">Re-choose Character</string>
+
+    <string name="drawer_open">Open Menu</string>
+    <string name="drawer_close">Close Menu</string>
 </resources>

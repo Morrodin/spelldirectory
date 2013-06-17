@@ -3,12 +3,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="240dp"
-              android:background="@color/midnight_blue"
+              android:background="@color/white_background"
               android:layout_gravity="left"
               android:layout_height="match_parent">
-
-    <LinearLayout
-        style="@style/drawer_border"/>
 
     <LinearLayout
         android:layout_height="wrap_content"

@@ -4,61 +4,48 @@ import java.util.ArrayList;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.os.Build;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.GestureDetector.SimpleOnGestureListener;
-import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.*;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.zzoranor.spelldirectory.CharacterLabel;
-import com.zzoranor.spelldirectory.CustomCharacterAdapter;
 import com.zzoranor.spelldirectory.R;
-import com.zzoranor.spelldirectory.TabMain;
 import com.zzoranor.spelldirectory.controllers.MainDrawerController;
 import com.zzoranor.spelldirectory.data.Character;
-import com.zzoranor.spelldirectory.database.DbAdapter;
-import com.zzoranor.spelldirectory.database.DbAdapterFactory;
+import com.zzoranor.spelldirectory.fragments.CharacterListFragment;
+import com.zzoranor.spelldirectory.services.SqlService;
 import com.zzoranor.spelldirectory.util.Constants;
 //import pl.verdigo.libraries.drawer.Drawer;
 
-public class CharacterList extends ListActivity implements OnClickListener, android.content.DialogInterface.OnCancelListener{
+public class CharacterList extends FragmentActivity implements android.content.DialogInterface.OnCancelListener{
 	
 	public static boolean EMULATOR = false;
 
     private MainDrawerController mDrawerController;
+    private SqlService mSqlService;
 
-    DrawerLayout mDrawer;
-	DbAdapter sql;
+    private DrawerLayout mDrawer;
 	final ArrayList<CharacterLabel> character_labels = new ArrayList<CharacterLabel>();
-	Context context;
-	CustomCharacterAdapter adapter;
-	public static Character chosenCharacter;
-	private GestureDetector gestureDetector;
-	View.OnTouchListener gestureListener;
+	private Context context;
+	private Character chosenCharacter;
 	
 	private Dialog create_dialog;
 	private Dialog edit_dialog;
 	private Dialog backup_dialog;
 	private Dialog restore_dialog;
-	
-	private static final int SWIPE_MIN_DISTANCE = 120;
-	private static final int SWIPE_MAX_OFF_PATH = 250;
-	private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+
 	private static final String DEFAULT_CHARACTER_NAME = "Default";
 	
 	private static final int EDIT_DIALOG = 0;
@@ -66,109 +53,33 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 	private static final int DELETE_CHARACTER_CONFIRM_DIALOG = 2;
 	private static final int BACKUP_DIALOG = 3;
 	private static final int RESTORE_FROM_FILE_DIALOG = 4;
-	
-	private int swipe = 0;
+
+    private CharacterListFragment characterListFragment;
 	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.character_list_activity);
+        setContentView(R.layout.character_list_activity);
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawer = (DrawerLayout) findViewById(R.id.tab_management_drawer_layout);
+        mDrawerController = new MainDrawerController(this, mDrawer);
+        mSqlService = new SqlService(this);
+        mSqlService.setupSql();
+        context = this;
 
-		mDrawerController = new MainDrawerController(this, mDrawer);
-		
-		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
-		int prefsChosenChar = settings.getInt("chosen_character", -1);
-		context = this;
-		
-		
-		if(Build.FINGERPRINT.startsWith("generic"))
-		{
-			EMULATOR = true;
-			Log.d("CharacterList", "Running on Emulator phone.");
-		}else
-		{
-			EMULATOR = false;
-			Log.d("CharacterList", "Running on Physical phone.");
-		}
-		
-		gestureDetector = new GestureDetector(new MyGestureDetector());
-		gestureListener = new View.OnTouchListener() {
-			public boolean onTouch(View v, MotionEvent event) {
-				if (gestureDetector.onTouchEvent(event)) {
-					return true;
-				}
-				return false;
-			}
-		};
-		
-		
-		sql = DbAdapterFactory.getStaticInstance(this);
-		sql.open();
-		
+        characterListFragment = new CharacterListFragment(mSqlService);
 
-		sql.getCharacters(character_labels);
-		
-		
-		// The value does not exist, we need to do something here. 
-		if(prefsChosenChar == -1 || character_labels.size() == 0 || !sql.isCharInDB(prefsChosenChar)){
-			
-			// No characters found in the database. Need to prompt to create character!
-			if(character_labels.size() == 0){
-				createDefaultCharacter();
-				chosenCharacter = sql.getFirstAvailCharacter();
-			}
-			else	// At least one character exists in the database. Set default character to first of those.
-			{
-				prefsChosenChar = character_labels.get(0).getId();
-			}		
-		}
-		
-		chosenCharacter = sql.getCharacterData(prefsChosenChar);
-		adapter = new CustomCharacterAdapter(this, R.layout.character_list_item, 
-				R.id.character_view_id, chosenCharacter, character_labels);
-		setListAdapter(adapter);
-		
-		ListView lv = getListView();
-		lv.setTextFilterEnabled(true);
-		
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				CharacterLabel cLabel = (CharacterLabel) parent.getItemAtPosition(position);
-				chosenCharacter = sql.getCharacterData(cLabel.getId());
-				saveChosenCharacter();
-				adapter.setCharacter(chosenCharacter);
-				TabMain.tabHost.setCurrentTabByTag("classes");
-			}
-		});
-		
-		lv.setOnItemLongClickListener(new OnItemLongClickListener() {
+        getFragmentManager().beginTransaction()
+                .add(R.id.character_list_fragment_container, characterListFragment).commit();
 
-			public boolean onItemLongClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				CharacterLabel cLabel = (CharacterLabel) parent.getItemAtPosition(position);
-				chosenCharacter = sql.getCharacterData(cLabel.getId());
-				saveChosenCharacter();
-				adapter.setCharacter(chosenCharacter);
-				reloadList();
-				editCharacter(cLabel);
-				return true;
-			}
-		});
-		
-		lv.setOnTouchListener(gestureListener);
+        SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
+        int prefsChosenChar = settings.getInt("chosen_character", -1);
 
+        chosenCharacter = mSqlService.getSqlAdapter().getCharacterData(prefsChosenChar);
 
-       setupDrawer();
+        setupDrawer();
 
-
-
-		reloadList();
 	}
 
     private void setupDrawer() {
@@ -182,10 +93,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
         restoreLink.setOnClickListener(this.restoreLinkListener());
 
         //Wire universal links through controller
-        mDrawerController.setupUniversalDrawerLinks();
+        mDrawerController.initDrawer();
     }
-
-
 
     /**
      * Listener for the Create Character drawer link
@@ -193,8 +102,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
      * @return
      *          {@link android.view.View.OnClickListener} for Create Character link
      */
-    protected OnClickListener createCharacterLinkListener() {
-        return new OnClickListener() {
+    protected View.OnClickListener createCharacterLinkListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 createCharacter();
@@ -209,8 +118,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
      * @return
      *          {@link android.view.View.OnClickListener} for Backup link
      */
-    protected OnClickListener backupLinkListener() {
-        return new OnClickListener() {
+    protected View.OnClickListener backupLinkListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialog(BACKUP_DIALOG);
@@ -225,8 +134,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
      * @return
      *          {@link android.view.View.OnClickListener} for Restore link
      */
-    protected OnClickListener restoreLinkListener() {
-        return new OnClickListener() {
+    protected View.OnClickListener restoreLinkListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialog(RESTORE_FROM_FILE_DIALOG);
@@ -234,124 +143,47 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
             }
         };
     }
+
+    private void createCharacter() {
+        showDialog(CREATE_DIALOG);
+    }
 	
-	public void saveChosenCharacter()
-	{
-		SharedPreferences settings = getSharedPreferences(Constants.PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		editor.putInt("chosen_character", chosenCharacter.getCharId());
-		editor.commit();
-	}
-	
-	public static Character getChosenCharacter()
-	{
-		return chosenCharacter;
-	}
-	
-	public static int getChosenCharacterId()
-	{
+	public int getChosenCharacterId() {
 		return chosenCharacter.getCharId();
 	}
 
-	private void reloadList() {
-		character_labels.clear();
-		sql.getCharacters(character_labels);
-		//adapter.setCharacter(chosenCharacter);
-		adapter.notifyDataSetChanged();
-	}
 	
 	@Override
 	protected void onResume() {
 		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		adapter.notifyDataSetChanged();
+		characterListFragment.getAdapter().notifyDataSetChanged();
 		super.onResume();
 	}
 	
-	public boolean onTouchEvent(MotionEvent event) {
-		if (gestureDetector.onTouchEvent(event))
-			return true;
-		else
-			return false;
-	}
-	
-	public void backupCharacters(String path, String name) {
-		
-		int[] ids = new int[character_labels.size()];
-		
-		for(int i = 0; i < character_labels.size(); i++)
-		{
-			ids[i] = character_labels.get(i).getId();
-		}
-			
-		
-		
-		String result = sql.backupCharactersToFile(ids, false, path, name);
-		
-		if(!result.equals(""))
-		{
-			Toast.makeText(this, result, Toast.LENGTH_LONG).show();
-			
-		}else
-		{
-			Toast.makeText(this, "Failed to backup Characters. Check path?", Toast.LENGTH_LONG).show();
-		}
-				
-	}
+//	public boolean onTouchEvent(MotionEvent event) {
+//		if (gestureDetector.onTouchEvent(event))
+//			return true;
+//		else
+//			return false;
+//	}
 
-	public boolean restoreCharacters(String fpath, String fname)
-	{
-		try
-		{
-			if(sql == null)
-			{
-				sql = DbAdapterFactory.getStaticInstance(this);
-				sql.open();
-			}
-			boolean res = sql.readBackupFile(fpath, fname);
-			character_labels.clear();
-			sql.getCharacters(character_labels);
-			
-			// Just use the first character. 
-			if(character_labels.size() > 0)
-			{
-				int chosenChar = character_labels.get(0).getId();
-				chosenCharacter = sql.getCharacterData(chosenChar);
-				reloadList();
-			}
-			return res;
-		}catch(Exception e)
-		{
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
+
 	private void delCharacter() {
-		sql.deleteCharacter(chosenCharacter.getCharId());
-		chosenCharacter = sql.getFirstAvailCharacter();
+		mSqlService.getSqlAdapter().deleteCharacter(characterListFragment.getChosenCharacter().getCharId());
+		chosenCharacter = mSqlService.getSqlAdapter().getFirstAvailCharacter();
 		if(chosenCharacter == null)
 		{
 			createDefaultCharacter();
 		}
-		chosenCharacter = sql.getFirstAvailCharacter();
-		adapter.setCharacter(chosenCharacter);
-		reloadList();
+		chosenCharacter = mSqlService.getSqlAdapter().getFirstAvailCharacter();
+		characterListFragment.getAdapter().setCharacter(chosenCharacter);
+		characterListFragment.reloadList();
 	}
 
-	private void editCharacter(CharacterLabel cLabel) {
-		showDialog(EDIT_DIALOG);
-	}
-
-	private void createCharacter() {
-		showDialog(CREATE_DIALOG);	
-	}
-
-
-	
 	private void createDefaultCharacter()
 	{
-		int newCharId = sql.addCharacter(DEFAULT_CHARACTER_NAME);
-		// Check if the character was properly added. 
+		int newCharId = mSqlService.getSqlAdapter().addCharacter(DEFAULT_CHARACTER_NAME);
+		// Check if the character was properly added.
 		if(newCharId == -1){
 			Log.d("CharacterList","Could not add Default character to database.");
 			Toast.makeText(this, "Could not add Default character to database.", Toast.LENGTH_LONG);
@@ -360,6 +192,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 			Log.d("CharacterList", "createDefaultCharacter() char = " + DEFAULT_CHARACTER_NAME + " added on id = " + newCharId);
 		}
 	}
+
+
 	
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog) {
@@ -367,12 +201,12 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 		{
 		case EDIT_DIALOG:
 			EditText etext = (EditText) dialog.findViewById(R.id.edit_charname);
-			etext.setText(chosenCharacter.getCharName());
+			etext.setText(characterListFragment.getChosenCharacter().getCharName());
 			break;
 		
 		case CREATE_DIALOG:
 			EditText ctext = (EditText) dialog.findViewById(R.id.create_charname);
-			ctext.setText(chosenCharacter.getCharName());
+			ctext.setText(characterListFragment.getChosenCharacter().getCharName());
 			break;
 		}
 		super.onPrepareDialog(id, dialog);
@@ -388,9 +222,9 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 				edit_dialog.setContentView(R.layout.edit_dialog);
 				EditText etext = (EditText) edit_dialog.findViewById(R.id.edit_charname);
 				etext.setText(chosenCharacter.getCharName());
-				edit_dialog.findViewById(R.id.edit_ok).setOnClickListener(this);
-				edit_dialog.findViewById(R.id.edit_delete).setOnClickListener(this);
-				edit_dialog.findViewById(R.id.edit_cancel).setOnClickListener(this);
+				edit_dialog.findViewById(R.id.edit_ok).setOnClickListener(characterListFragment);
+				edit_dialog.findViewById(R.id.edit_delete).setOnClickListener(characterListFragment);
+				edit_dialog.findViewById(R.id.edit_cancel).setOnClickListener(characterListFragment);
 				dialog = edit_dialog;
 				break;
 				
@@ -401,8 +235,8 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 				etext = (EditText) create_dialog.findViewById(R.id.create_charname);
 				//TODO: Fix some default character name. 
 				etext.setText("");
-				create_dialog.findViewById(R.id.create_ok).setOnClickListener(this);
-				create_dialog.findViewById(R.id.create_cancel).setOnClickListener(this);
+				create_dialog.findViewById(R.id.create_ok).setOnClickListener(characterListFragment);
+				create_dialog.findViewById(R.id.create_cancel).setOnClickListener(characterListFragment);
 				create_dialog.setOnCancelListener(this);
 				dialog = create_dialog;
 				break;
@@ -441,9 +275,9 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 				EditText fname = (EditText) dialog.findViewById(R.id.backup_dest_name);
 				fname.setText("spelldir_backup.xml");
 				Button saveButton = (Button) dialog.findViewById(R.id.backup_save_button);
-				saveButton.setOnClickListener(this);
+				saveButton.setOnClickListener(characterListFragment);
 				Button cancelButton = (Button) dialog.findViewById(R.id.backup_cancel_button);
-				cancelButton.setOnClickListener(this);
+				cancelButton.setOnClickListener(characterListFragment);
 				backup_dialog = dialog;
 				break;
 				
@@ -464,114 +298,13 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 				fname = (EditText) dialog.findViewById(R.id.restore_dest_name);
 				fname.setText("spelldir_backup.xml");
 				saveButton = (Button) dialog.findViewById(R.id.restore_save_button);
-				saveButton.setOnClickListener(this);
+				saveButton.setOnClickListener(characterListFragment);
 				cancelButton = (Button) dialog.findViewById(R.id.restore_cancel_button);
-				cancelButton.setOnClickListener(this);
+				cancelButton.setOnClickListener(characterListFragment);
 				restore_dialog = dialog;
 				break;
 		}
 		return dialog;
-	}
-	
-	public void onClick(View v) {
-		
-		switch(v.getId())
-		{
-		case R.id.edit_ok:
-			String name = ((EditText)edit_dialog.findViewById(R.id.edit_charname)).getEditableText().toString();
-			
-			if(!name.equals(""))
-			{
-				// TODO: This could probably be done a bit better...
-				// Editing a character	
-				sql.renameCharacter(chosenCharacter.getCharId(), name);
-				for(int i = 0; i < character_labels.size();i++){
-					CharacterLabel cl = character_labels.get(i);
-					// Grab the correct label for the character that is to change name. 
-					if(cl.getId() == chosenCharacter.getCharId()){
-						cl.setName(name);
-					}
-				}
-				chosenCharacter.setCharName(name);
-				reloadList();
-				edit_dialog.dismiss();
-			}else
-			{
-				Toast.makeText(this, "Character name cannot be empty.", Toast.LENGTH_LONG).show();
-			}
-			break;
-				
-			
-			// Creating a new Character
-		case R.id.create_ok:
-			name = ((EditText)create_dialog.findViewById(R.id.create_charname)).getEditableText().toString();
-			if(!name.equals(""))
-			{
-				int newCharId = sql.addCharacter(name);
-				// Check if the character was properly added. 
-				if(newCharId >= 0){
-					chosenCharacter = sql.getCharacterData(newCharId);
-					character_labels.add(new CharacterLabel(newCharId, name));
-					
-					reloadList();
-					create_dialog.dismiss();
-				}else
-				{
-					Toast.makeText(this, "Could not add character to database. ", Toast.LENGTH_LONG).show();
-					create_dialog.dismiss();
-				}
-			}else
-			{
-				Toast.makeText(this, "Character name cannot be empty.", Toast.LENGTH_LONG);
-			}
-			break;
-			
-		case R.id.edit_delete:
-			edit_dialog.dismiss();
-			showDialog(DELETE_CHARACTER_CONFIRM_DIALOG);
-			break;
-			
-		case R.id.edit_cancel:
-			edit_dialog.cancel();
-			break;
-			
-		case R.id.create_cancel:
-			// Since there exists a onCancel() method, we delegate to that one. 
-			create_dialog.cancel();
-			break;
-			
-		case R.id.backup_save_button:
-			String path = ((EditText) backup_dialog.findViewById(R.id.backup_dest_path)).getText().toString();
-			String fileName = ((EditText) backup_dialog.findViewById(R.id.backup_dest_name)).getText().toString();
-			backup_dialog.dismiss();
-			backupCharacters(path, fileName);
-			break;
-			
-		case R.id.backup_cancel_button:
-			backup_dialog.dismiss();
-			break;
-			
-		case R.id.restore_save_button:
-			path = ((EditText) restore_dialog.findViewById(R.id.restore_dest_path)).getText().toString();
-			fileName = ((EditText) restore_dialog.findViewById(R.id.restore_dest_name)).getText().toString();
-			restore_dialog.dismiss();
-			boolean res = restoreCharacters(path, fileName);
-			if(res)
-			{
-				Toast.makeText(context, "Characters restored successfully", Toast.LENGTH_LONG).show();
-			}else
-			{
-				Toast.makeText(context, "Failed to restore characters from file. ", Toast.LENGTH_LONG).show();
-			}
-			break;
-			
-		case R.id.restore_cancel_button:
-			restore_dialog.dismiss();
-			break;
-			
-		}
-		
-		
 	}
 	
 	@Override
@@ -591,40 +324,78 @@ public class CharacterList extends ListActivity implements OnClickListener, andr
 		
 		}
 	}
-	
-	private class MyGestureDetector extends SimpleOnGestureListener {
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float vx,
-				float vy) {
-			Log.d("EVENT", "OnFling");
-			try {
-				if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
-					return false;
-				// right to left swipe
-				if (e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE
-						&& Math.abs(vx) > SWIPE_THRESHOLD_VELOCITY) {
-					Log.d("EVENT", "OnFling ------ Left Fling");
-					TabMain.tabHost.setCurrentTabByTag("classes");
-					return true;
-					// swipe = 1;
-				} else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE
-						&& Math.abs(vy) > SWIPE_THRESHOLD_VELOCITY) {
-					Log.d("EVENT", "OnFling ------ Right Fling");
-					
-					return true;
-				}
-			} catch (Exception e) {
-				// nothing
-			}
-			return false;
-		}
-	}
 
 	public void onCancel(DialogInterface dialog) {
 		create_dialog.dismiss();
-		if(!sql.hasCharacters())
+		if(!mSqlService.getSqlAdapter().hasCharacters())
 		{
 			createDefaultCharacter();
-			chosenCharacter = sql.getFirstAvailCharacter();
+			chosenCharacter = mSqlService.getSqlAdapter().getFirstAvailCharacter();
 		}
 	}
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerController.getDrawerToggle().syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerController.getDrawerToggle().onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Pass the event to ActionBarDrawerToggle, if it returns
+        // true, then it has handled the app icon touch event
+        if (mDrawerController.getDrawerToggle().onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle your other action bar items...
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public Dialog getCreateDialog() {
+        return create_dialog;
+    }
+
+    public void setCreateDialog(Dialog create_dialog) {
+        this.create_dialog = create_dialog;
+    }
+
+    public Dialog getEditDialog() {
+        return edit_dialog;
+    }
+
+    public void setEditDialog(Dialog edit_dialog) {
+        this.edit_dialog = edit_dialog;
+    }
+
+    public Dialog getBackupDialog() {
+        return backup_dialog;
+    }
+
+    public void setBackupDialog(Dialog backup_dialog) {
+        this.backup_dialog = backup_dialog;
+    }
+
+    public Dialog getRestoreDialog() {
+        return restore_dialog;
+    }
+
+    public void setRestoreDialog(Dialog restore_dialog) {
+        this.restore_dialog = restore_dialog;
+    }
+
+    public SqlService getSqlService() {
+        return mSqlService;
+    }
+
+    public void setSqlService(SqlService mSqlService) {
+        this.mSqlService = mSqlService;
+    }
 }

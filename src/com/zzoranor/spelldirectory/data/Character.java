@@ -1,5 +1,6 @@
 package com.zzoranor.spelldirectory.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -15,7 +16,10 @@ import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Pair;
 
-public class Character {
+public class Character implements Serializable {
+
+    private static final long serialVersionUID = 678321678145768L;
+
 	private String charName;
 	private int char_id = 1;
 	private int[] prepSpellLevels;

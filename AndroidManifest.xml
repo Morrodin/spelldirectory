@@ -3,23 +3,24 @@
       package="com.zzoranor.spelldirectory"
       android:versionCode="12"
       android:versionName="1.2.3" android:installLocation="preferExternal">
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="8"/>
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="17"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
 
     <application android:label="@string/app_name" android:icon="@drawable/spellbook">
-        <activity android:name=".TabMain" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait">
-                       	<intent-filter>
-	            <action android:name="android.intent.action.MAIN" />
-	            <category android:name="android.intent.category.LAUNCHER" />
-        	</intent-filter>
+        <activity android:name=".activity.CharacterList" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".activity.CharacterList" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.ClassList" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.HelpActivity" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.InfoActivity" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.PreparedList" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.SingleSpell" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:name=".activity.SpellList" android:theme="@android:style/Theme.NoTitleBar" android:screenOrientation="portrait"></activity>
-        <activity android:theme="@android:style/Theme.NoTitleBar" android:name=".activity.SpellPreferences" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.ClassList" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".activity.TabManagementActivity" android:theme="@style/Theme.AppTheme" android:label="" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.HelpActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.InfoActivity" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.PreparedList" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.SingleSpell" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait"></activity>
+        <activity android:name=".activity.SpellList" android:theme="@android:style/Theme.Holo.Light" android:screenOrientation="portrait"></activity>
+        <activity android:theme="@android:style/Theme.Holo.Light" android:name=".activity.SpellPreferences" android:screenOrientation="portrait"></activity>
     </application>
 </manifest>
